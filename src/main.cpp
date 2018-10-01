@@ -1,9 +1,11 @@
-#include <DisplayManager.h>
+#include <Display.h>
 #include <iostream>
 
 int main() {
-  std::cout << "Hello from main" << std::endl;
-  std::cout << nrg::DisplayManager::screenWidth;
-  std::cout << nrg::DisplayManager::screenHeight;
+  nrg::Display display = nrg::createDisplay(1024.0f, 768.0f);
+
+  while (!display.shouldClose()) {
+    display.update();
+  }
   return 0;
 }

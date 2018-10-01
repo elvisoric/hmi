@@ -1,6 +1,8 @@
-project('nrg', 'cpp')
+project('nrg', 'cpp', default_options:['cpp_std=c++14'])
 
 incdir = include_directories('include')
 glfw_dep = dependency('glfw3')
 
-executable('nrg', ['src/main.cpp','src/glad.cpp'], include_directories:incdir, dependencies:[glfw_dep])
+srcs = ['src/main.cpp','src/glad.cpp','src/Display.cpp']
+
+executable('nrg', srcs, include_directories:incdir, dependencies:[glfw_dep])
