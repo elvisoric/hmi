@@ -2,11 +2,11 @@
 #define NRG_RENDERER_H
 
 namespace nrg {
-class RawModel;
+class TexturedModel;
 class Renderer {
  public:
   void prepare();
-  void render(const RawModel& model) const;
+  void render(const TexturedModel& model) const;
 };
 }  // namespace nrg
 #endif  // NRG_RENDERER_H

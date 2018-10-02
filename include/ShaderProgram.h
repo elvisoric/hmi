@@ -19,6 +19,7 @@ class ShaderProgram {
   inline void bindAttribute(int attribute, const std::string& name) {
     glBindAttribLocation(programID_, attribute, name.c_str());
   }
+  void linkProgram() const;
 
  private:
   unsigned int programID_;

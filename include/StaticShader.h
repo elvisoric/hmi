@@ -11,7 +11,11 @@ class StaticShader : public ShaderProgram {
   }
 
  protected:
-  void bindAttributes() override { bindAttribute(0, "position"); }
+  void bindAttributes() override {
+    bindAttribute(0, "position");
+    bindAttribute(1, "aTexCoords");
+    linkProgram();
+  }
 };
 }  // namespace nrg
 #endif  // NRG_STATIC_SHADER_H

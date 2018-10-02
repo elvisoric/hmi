@@ -55,15 +55,6 @@ ShaderProgram::ShaderProgram(const std::string& vertexFile,
   programID_ = glCreateProgram();
   glAttachShader(programID_, vertexShaderID_);
   glAttachShader(programID_, fragmentShaderID_);
-  glLinkProgram(programID_);
-  glValidateProgram(programID_);
-  int success;
-  char logInfo[512];
-  glGetProgramiv(programID_, GL_LINK_STATUS, &success);
-  if (!success) {
-    glGetProgramInfoLog(programID_, 512, NULL, logInfo);
-    std::cout << "ERROR::PROGRAM::LINK_ERROR " << logInfo << std::endl;
-  }
 }
 
 ShaderProgram::~ShaderProgram() { cleanUp(); }
@@ -75,5 +66,16 @@ void ShaderProgram::cleanUp() const {
   glDeleteShader(vertexShaderID_);
   glDeleteShader(fragmentShaderID_);
   glDeleteProgram(programID_);
+}
+void ShaderProgram::linkProgram() const {
+  glLinkProgram(programID_);
+  glValidateProgram(programID_);
+  int success;
+  char logInfo[512];
+  glGetProgramiv(programID_, GL_LINK_STATUS, &success);
+  if (!success) {
+    glGetProgramInfoLog(programID_, 512, NULL, logInfo);
+    std::cout << "ERROR::PROGRAM::LINK_ERROR " << logInfo << std::endl;
+  }
 }
 }  // namespace nrg

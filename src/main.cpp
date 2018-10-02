@@ -2,6 +2,7 @@
 #include <Loader.h>
 #include <Renderer.h>
 #include <StaticShader.h>
+#include <TexturedModel.h>
 #include <iostream>
 #include <vector>
 
@@ -14,8 +15,12 @@ int main() {
       0, 1, 3,  // first triangle
       1, 2, 3   // second triangle
   };
+  std::vector<float> textureCoords = {0.0f, 0.0f, 0.0f, 1.0f,
+                                      1.0f, 1.0f, 1.0f, 0.0f};
   nrg::Loader loader;
-  auto model = loader.loadVAO(vertices, indices);
+  auto rawModel = loader.loadVAO(vertices, textureCoords, indices);
+  auto modelTexture = loader.loadTexture("res/texture.jpg");
+  nrg::TexturedModel model{rawModel, modelTexture};
   nrg::StaticShader shader;
   nrg::Renderer renderer;
 
