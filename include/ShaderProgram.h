@@ -2,6 +2,8 @@
 #define NRG_SHADER_PROGRAM_H
 
 #include <glad/glad.h>
+
+#include <glm/glm.hpp>
 #include <string>
 
 namespace nrg {
@@ -13,6 +15,14 @@ class ShaderProgram {
   inline void start() const { glUseProgram(programID_); }
   inline void stop() const { glUseProgram(0); }
   void cleanUp() const;
+
+  void loadUniform(unsigned int location, bool value) const;
+  void loadUniform(unsigned int location, float value) const;
+  void loadUniform(unsigned int location, const glm::vec3& value) const;
+  void loadUniform(unsigned int location, const glm::mat4& value) const;
+
+  virtual void getAllUniformLocations() = 0;
+  unsigned int getUniformLocation(const std::string& uniformName) const;
 
  protected:
   virtual void bindAttributes() = 0;

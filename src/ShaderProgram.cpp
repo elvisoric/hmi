@@ -1,5 +1,8 @@
 #include <ShaderProgram.h>
 #include <fstream>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 #include <iostream>
 #include <sstream>
 
@@ -78,4 +81,30 @@ void ShaderProgram::linkProgram() const {
     std::cout << "ERROR::PROGRAM::LINK_ERROR " << logInfo << std::endl;
   }
 }
+
+void ShaderProgram::loadUniform(unsigned int location, bool value) const {
+  float toLoad = 0;
+  if (value) toLoad = 1;
+  glUniform1f(location, value);
+}
+
+void ShaderProgram::loadUniform(unsigned int location, float value) const {
+  glUniform1f(location, value);
+}
+
+void ShaderProgram::loadUniform(unsigned int location,
+                                const glm::vec3& value) const {
+  glUniform3fv(location, 1, glm::value_ptr(value));
+}
+
+void ShaderProgram::loadUniform(unsigned int location,
+                                const glm::mat4& value) const {
+  glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(value));
+}
+
+unsigned int ShaderProgram::getUniformLocation(
+    const std::string& uniformName) const {
+  return glGetUniformLocation(programID_, uniformName.c_str());
+}
+
 }  // namespace nrg

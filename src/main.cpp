@@ -1,5 +1,6 @@
 #include <Display.h>
 #include <Loader.h>
+#include <Maths.h>
 #include <Renderer.h>
 #include <StaticShader.h>
 #include <TexturedModel.h>
@@ -23,12 +24,14 @@ int main() {
   nrg::TexturedModel model{rawModel, modelTexture};
   nrg::StaticShader shader;
   nrg::Renderer renderer;
-
+  auto transformation = nrg::createTransformation(glm::vec3(0.3f, -0.3f, -0.2f),
+                                                  0.0f, 0.0f, 40.0f, 1.0f);
   glEnable(GL_DEPTH_TEST);
 
   while (!display.shouldClose()) {
     renderer.prepare();
     shader.start();
+    shader.loadTransformation(transformation);
     renderer.render(model);
     shader.stop();
     display.update();
