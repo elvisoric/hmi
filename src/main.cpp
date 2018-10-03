@@ -1,4 +1,5 @@
 #include <Display.h>
+#include <Entity.h>
 #include <Loader.h>
 #include <Maths.h>
 #include <Renderer.h>
@@ -22,17 +23,21 @@ int main() {
   auto rawModel = loader.loadVAO(vertices, textureCoords, indices);
   auto modelTexture = loader.loadTexture("res/texture.jpg");
   nrg::TexturedModel model{rawModel, modelTexture};
+  nrg::Entity entity{model, glm::vec3(0.0f, 0.0f, -10.0f), 0.0f, 0.0f, 0.0f,
+                     1.0f};
   nrg::StaticShader shader;
-  nrg::Renderer renderer;
-  auto transformation = nrg::createTransformation(glm::vec3(0.3f, -0.3f, -0.2f),
-                                                  0.0f, 0.0f, 40.0f, 1.0f);
+  nrg::Renderer renderer{display};
+  nrg::Camera camera;
+
   glEnable(GL_DEPTH_TEST);
 
   while (!display.shouldClose()) {
+    camera.move(display.window());
+    entity.increaseRotation(0.0f, 1.0f, 0.0f);
     renderer.prepare();
     shader.start();
-    shader.loadTransformation(transformation);
-    renderer.render(model);
+    shader.loadView(camera);
+    renderer.render(entity, shader);
     shader.stop();
     display.update();
   }

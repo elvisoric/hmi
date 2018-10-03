@@ -18,6 +18,7 @@ class Display {
     glfwPollEvents();
   }
   inline bool shouldClose() const { return glfwWindowShouldClose(window_); }
+  inline GLFWwindow* window() { return window_; }
 
   inline float width() const { return width_; }
   inline float height() const { return height_; }
