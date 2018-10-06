@@ -62,7 +62,7 @@ unsigned int Loader::loadTexture(const std::string &path) {
   unsigned char *data =
       stbi_load(path.c_str(), &width, &height, &nrComponents, 0);
   if (data) {
-    GLenum format;
+    GLenum format = GL_RED;
     if (nrComponents == 1)
       format = GL_RED;
     else if (nrComponents == 3)
