@@ -2,26 +2,22 @@
 #include <Entity.h>
 #include <Loader.h>
 #include <Maths.h>
+#include <ObjLoader.h>
 #include <Renderer.h>
 #include <StaticShader.h>
 #include <TexturedModel.h>
+#include <stb_image.h>
 #include <iostream>
 #include <vector>
 
 int main() {
+  stbi_set_flip_vertically_on_load(true);
+
   nrg::Display display = nrg::createDisplay(1024.0f, 768.0f);
-  std::vector<float> vertices = {// positions
-                                 0.5f,  0.5f,  0.0f, 0.5f,  -0.5f, 0.0f,
-                                 -0.5f, -0.5f, 0.0f, -0.5f, 0.5f,  0.0f};
-  std::vector<unsigned int> indices = {
-      0, 1, 3,  // first triangle
-      1, 2, 3   // second triangle
-  };
-  std::vector<float> textureCoords = {0.0f, 0.0f, 0.0f, 1.0f,
-                                      1.0f, 1.0f, 1.0f, 0.0f};
   nrg::Loader loader;
-  auto rawModel = loader.loadVAO(vertices, textureCoords, indices);
-  auto modelTexture = loader.loadTexture("res/texture.jpg");
+  auto obj = nrg::load("res/monkey.obj");
+  auto rawModel = loader.loadVAO(obj.vertices, obj.textures, obj.indices);
+  auto modelTexture = loader.loadTexture("res/white.png");
   nrg::TexturedModel model{rawModel, modelTexture};
   nrg::Entity entity{model, glm::vec3(0.0f, 0.0f, -10.0f), 0.0f, 0.0f, 0.0f,
                      1.0f};

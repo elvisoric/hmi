@@ -13,6 +13,8 @@ class Camera {
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) position_.z += 0.02f;
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) position_.x += 0.02f;
     if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) position_.x -= 0.02f;
+    if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) position_.y += 0.02f;
+    if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) position_.y -= 0.02f;
   }
   inline const glm::vec3& position() const { return position_; }
 
