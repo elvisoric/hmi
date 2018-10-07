@@ -61,10 +61,12 @@ ObjData load(const std::string& filepath) {
     std::string line;
     std::vector<vec3> vertices;
     std::vector<vec2> textures;
+    std::vector<vec3> normals;
     std::vector<unsigned int> indices;
-    std::vector<unsigned int> textureIndices;
-    std::vector<unsigned int> normalIndices;
+    // std::vector<unsigned int> textureIndices;
+    // std::vector<unsigned int> normalIndices;
     std::vector<float> texturesArray;
+    std::vector<float> normalsArray;
     while (std::getline(file, line)) {
       if (startsWith(line, "v ")) {
         auto vertex = parseVec3(line.substr(2));
@@ -73,8 +75,11 @@ ObjData load(const std::string& filepath) {
         auto tex = parseVec2(line.substr(3));
         textures.push_back(tex);
       } else if (startsWith(line, "vn ")) {
+        auto normal = parseVec3(line.substr(3));
+        normals.push_back(normal);
       } else if (startsWith(line, "f ")) {
         texturesArray.resize(vertices.size() * 2);
+        normalsArray.resize(vertices.size() * 3);
         break;
       }
     }
@@ -89,6 +94,12 @@ ObjData load(const std::string& filepath) {
       texturesArray[index1 * 2] = tex1.x;
       texturesArray[index1 * 2 + 1] = tex1.y;
 
+      unsigned int normIndex1 = first.z - 1;
+      const auto& norm1 = normals.at(normIndex1);
+      normalsArray[index1 * 3] = norm1.x;
+      normalsArray[index1 * 3 + 1] = norm1.y;
+      normalsArray[index1 * 3 + 2] = norm1.z;
+
       vec3 second = parseFace(vec[1]);
       unsigned int index2 = second.x - 1;
       indices.push_back(index2);
@@ -97,6 +108,12 @@ ObjData load(const std::string& filepath) {
       texturesArray[index2 * 2] = tex2.x;
       texturesArray[index2 * 2 + 1] = tex2.y;
 
+      unsigned int normIndex2 = second.z - 1;
+      const auto& norm2 = normals.at(normIndex2);
+      normalsArray[index2 * 3] = norm2.x;
+      normalsArray[index2 * 3 + 1] = norm2.y;
+      normalsArray[index2 * 3 + 2] = norm2.z;
+
       vec3 third = parseFace(vec[2]);
       unsigned int index3 = third.x - 1;
       indices.push_back(index3);
@@ -104,6 +121,12 @@ ObjData load(const std::string& filepath) {
       const auto& tex3 = textures.at(texIndex3);
       texturesArray[index3 * 2] = tex3.x;
       texturesArray[index3 * 2 + 1] = tex3.y;
+
+      unsigned int normIndex3 = third.z - 1;
+      const auto& norm3 = normals.at(normIndex3);
+      normalsArray[index3 * 3] = norm3.x;
+      normalsArray[index3 * 3 + 1] = norm3.y;
+      normalsArray[index3 * 3 + 2] = norm3.z;
     } while (getline(file, line));
 
     std::vector<float> vertexData;
@@ -116,6 +139,7 @@ ObjData load(const std::string& filepath) {
     result.vertices = vertexData;
     result.indices = indices;
     result.textures = texturesArray;
+    result.normals = normalsArray;
     return result;
   } catch (std::exception& ex) {
     std::cout << "exception: " << ex.what() << std::endl;

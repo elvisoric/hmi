@@ -8,10 +8,12 @@ Loader::~Loader() { cleanUp(); }
 
 RawModel Loader::loadVAO(std::vector<float> &vertices,
                          std::vector<float> &textureCoords,
+                         std::vector<float> &normals,
                          std::vector<unsigned int> &indices) {
   auto vao = createVAO();
   storeDataInAttributesList(0, 3, vertices);
   storeDataInAttributesList(1, 2, textureCoords);
+  storeDataInAttributesList(2, 3, normals);
   bindIndicesBuffer(indices);
   unbindVAO();
   return RawModel{vao, indices.size()};

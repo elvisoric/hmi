@@ -9,6 +9,7 @@ class Loader {
  public:
   RawModel loadVAO(std::vector<float> &vertices,
                    std::vector<float> &textureCoords,
+                   std::vector<float> &normals,
                    std::vector<unsigned int> &indices);
   virtual ~Loader();
   void cleanUp();

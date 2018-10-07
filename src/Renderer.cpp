@@ -22,6 +22,7 @@ void Renderer::render(const Entity& entity, StaticShader& shader) const {
   glBindVertexArray(rawModel.vaoID());
   glEnableVertexAttribArray(0);
   glEnableVertexAttribArray(1);
+  glEnableVertexAttribArray(2);
   auto transform =
       nrg::createTransformation(entity.position(), entity.rotX(), entity.rotY(),
                                 entity.rotZ(), entity.scale());
@@ -32,5 +33,6 @@ void Renderer::render(const Entity& entity, StaticShader& shader) const {
   glDrawElements(GL_TRIANGLES, rawModel.vertexCount(), GL_UNSIGNED_INT, 0);
   glDisableVertexAttribArray(0);
   glDisableVertexAttribArray(1);
+  glDisableVertexAttribArray(2);
 }
 }  // namespace nrg
