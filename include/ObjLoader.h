@@ -4,6 +4,7 @@
 #include <iostream>
 #include <sstream>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 namespace nrg {
@@ -23,6 +24,29 @@ struct ObjData {
   std::vector<float> textures;
   std::vector<float> normals;
   std::vector<unsigned int> indices;
+  friend std::ostream& operator<<(std::ostream& out, const ObjData& obj) {
+    out << "Vertices: " << std::endl;
+    for (const auto& v : obj.vertices) {
+      out << v << " ";
+    }
+    out << std::endl;
+    out << "Normals: " << std::endl;
+    for (const auto& n : obj.normals) {
+      out << n << " ";
+    }
+    out << std::endl;
+    out << "Textures: " << std::endl;
+    for (const auto& t : obj.textures) {
+      out << t << " ";
+    }
+    out << std::endl;
+    out << "Indices: " << std::endl;
+    for (const auto& i : obj.indices) {
+      out << i << " ";
+    }
+    out << std::endl;
+    return out;
+  }
 };
 
 std::vector<std::string> split(const std::string& s, char delimiter) {
@@ -43,8 +67,6 @@ vec3 parseVec3(const std::string& data) {
   return {std::stof(values[0]), std::stof(values[1]), std::stof(values[2])};
 }
 
-// glm::vec3 parseNormal(const std::string& data) { return parseVertex(data); }
-
 vec2 parseVec2(const std::string& data) {
   auto values = split(data, ' ');
   return {std::stof(values[0]), std::stof(values[1])};
@@ -63,10 +85,10 @@ ObjData load(const std::string& filepath) {
     std::vector<vec2> textures;
     std::vector<vec3> normals;
     std::vector<unsigned int> indices;
-    // std::vector<unsigned int> textureIndices;
-    // std::vector<unsigned int> normalIndices;
+    std::vector<float> verticesArray;
     std::vector<float> texturesArray;
     std::vector<float> normalsArray;
+    std::unordered_map<std::string, unsigned int> combinedIndices;
     while (std::getline(file, line)) {
       if (startsWith(line, "v ")) {
         auto vertex = parseVec3(line.substr(2));
@@ -78,65 +100,98 @@ ObjData load(const std::string& filepath) {
         auto normal = parseVec3(line.substr(3));
         normals.push_back(normal);
       } else if (startsWith(line, "f ")) {
-        texturesArray.resize(vertices.size() * 2);
-        normalsArray.resize(vertices.size() * 3);
+        // texturesArray.resize(vertices.size() * 2);
+        // normalsArray.resize(vertices.size() * 3);
         break;
       }
     }
-
+    unsigned int indexCount = 0;
     do {
       std::vector<std::string> vec = split(line.substr(2), ' ');
-      vec3 first = parseFace(vec[0]);
-      unsigned int index1 = first.x - 1;
-      indices.push_back(index1);
-      unsigned int texIndex1 = first.y - 1;
-      const auto& tex1 = textures.at(texIndex1);
-      texturesArray[index1 * 2] = tex1.x;
-      texturesArray[index1 * 2 + 1] = tex1.y;
+      auto iter1 = combinedIndices.find(vec[0]);
+      if (iter1 != std::end(combinedIndices)) {
+        indices.push_back(iter1->second);
+      } else {
+        vec3 first = parseFace(vec[0]);
+        unsigned int index1 = first.x - 1;
+        const auto& vertex = vertices[index1];
+        verticesArray.push_back(vertex.x);
+        verticesArray.push_back(vertex.y);
+        verticesArray.push_back(vertex.z);
 
-      unsigned int normIndex1 = first.z - 1;
-      const auto& norm1 = normals.at(normIndex1);
-      normalsArray[index1 * 3] = norm1.x;
-      normalsArray[index1 * 3 + 1] = norm1.y;
-      normalsArray[index1 * 3 + 2] = norm1.z;
+        unsigned int texIndex1 = first.y - 1;
+        const auto& tex = textures.at(texIndex1);
+        texturesArray.push_back(tex.x);
+        texturesArray.push_back(1 - tex.y);
 
-      vec3 second = parseFace(vec[1]);
-      unsigned int index2 = second.x - 1;
-      indices.push_back(index2);
-      unsigned int texIndex2 = second.y - 1;
-      const auto& tex2 = textures.at(texIndex2);
-      texturesArray[index2 * 2] = tex2.x;
-      texturesArray[index2 * 2 + 1] = tex2.y;
+        unsigned int normIndex1 = first.z - 1;
+        const auto& norm = normals.at(normIndex1);
+        normalsArray.push_back(norm.x);
+        normalsArray.push_back(norm.y);
+        normalsArray.push_back(norm.z);
 
-      unsigned int normIndex2 = second.z - 1;
-      const auto& norm2 = normals.at(normIndex2);
-      normalsArray[index2 * 3] = norm2.x;
-      normalsArray[index2 * 3 + 1] = norm2.y;
-      normalsArray[index2 * 3 + 2] = norm2.z;
+        indices.push_back(indexCount);
+        combinedIndices[vec[0]] = indexCount;
+        ++indexCount;
+      }
 
-      vec3 third = parseFace(vec[2]);
-      unsigned int index3 = third.x - 1;
-      indices.push_back(index3);
-      unsigned int texIndex3 = third.y - 1;
-      const auto& tex3 = textures.at(texIndex3);
-      texturesArray[index3 * 2] = tex3.x;
-      texturesArray[index3 * 2 + 1] = tex3.y;
+      auto iter2 = combinedIndices.find(vec[1]);
+      if (iter2 != std::end(combinedIndices)) {
+        indices.push_back(iter2->second);
+      } else {
+        vec3 second = parseFace(vec[1]);
+        unsigned int index2 = second.x - 1;
+        const auto& vertex = vertices[index2];
+        verticesArray.push_back(vertex.x);
+        verticesArray.push_back(vertex.y);
+        verticesArray.push_back(vertex.z);
 
-      unsigned int normIndex3 = third.z - 1;
-      const auto& norm3 = normals.at(normIndex3);
-      normalsArray[index3 * 3] = norm3.x;
-      normalsArray[index3 * 3 + 1] = norm3.y;
-      normalsArray[index3 * 3 + 2] = norm3.z;
+        unsigned int texIndex2 = second.y - 1;
+        const auto& tex = textures.at(texIndex2);
+        texturesArray.push_back(tex.x);
+        texturesArray.push_back(1 - tex.y);
+
+        unsigned int normIndex2 = second.z - 1;
+        const auto& norm = normals.at(normIndex2);
+        normalsArray.push_back(norm.x);
+        normalsArray.push_back(norm.y);
+        normalsArray.push_back(norm.z);
+
+        indices.push_back(indexCount);
+        combinedIndices[vec[1]] = indexCount;
+        ++indexCount;
+      }
+
+      auto iter3 = combinedIndices.find(vec[2]);
+      if (iter3 != std::end(combinedIndices)) {
+        indices.push_back(iter3->second);
+      } else {
+        vec3 third = parseFace(vec[2]);
+        unsigned int index3 = third.x - 1;
+        const auto& vertex = vertices[index3];
+        verticesArray.push_back(vertex.x);
+        verticesArray.push_back(vertex.y);
+        verticesArray.push_back(vertex.z);
+
+        unsigned int texIndex3 = third.y - 1;
+        const auto& tex = textures.at(texIndex3);
+        texturesArray.push_back(tex.x);
+        texturesArray.push_back(1 - tex.y);
+
+        unsigned int normIndex3 = third.z - 1;
+        const auto& norm = normals.at(normIndex3);
+        normalsArray.push_back(norm.x);
+        normalsArray.push_back(norm.y);
+        normalsArray.push_back(norm.z);
+
+        indices.push_back(indexCount);
+        combinedIndices[vec[2]] = indexCount;
+        ++indexCount;
+      }
     } while (getline(file, line));
 
-    std::vector<float> vertexData;
-    for (const auto& v : vertices) {
-      vertexData.push_back(v.x);
-      vertexData.push_back(v.y);
-      vertexData.push_back(v.z);
-    }
     ObjData result;
-    result.vertices = vertexData;
+    result.vertices = verticesArray;
     result.indices = indices;
     result.textures = texturesArray;
     result.normals = normalsArray;
