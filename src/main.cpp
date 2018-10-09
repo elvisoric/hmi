@@ -10,18 +10,37 @@
 #include <iostream>
 #include <vector>
 
+nrg::TexturedModel loadTexturedModel(const std::string& objpath,
+                                     const std::string& texturpath,
+                                     nrg::Loader& loader) {
+  auto obj = nrg::load(objpath);
+  auto rawModel =
+      loader.loadVAO(obj.vertices, obj.textures, obj.normals, obj.indices);
+  auto modelTexture = loader.loadTexture(texturpath);
+  nrg::TexturedModel model{rawModel, modelTexture};
+  return model;
+}
+
 int main() {
   // stbi_set_flip_vertically_on_load(true);
 
   nrg::Display display = nrg::createDisplay(1024.0f, 768.0f);
   nrg::Loader loader;
-  auto obj = nrg::load("res/cube.obj");
-  auto rawModel =
-      loader.loadVAO(obj.vertices, obj.textures, obj.normals, obj.indices);
-  auto modelTexture = loader.loadTexture("res/grid.png");
-  nrg::TexturedModel model{rawModel, modelTexture};
-  nrg::Entity entity{model, glm::vec3(0.0f, 0.0f, -5.0f), 0.0f, 0.0f, 0.0f,
-                     1.0f};
+
+  auto sphereModel =
+      loadTexturedModel("res/sphere.obj", "res/sphere.png", loader);
+  nrg::Entity sphere{
+      sphereModel, glm::vec3(0.0f, 0.0f, -5.0f), 0.0f, 0.0f, 0.0f, 1.0f};
+
+  auto cubeModel = loadTexturedModel("res/cube.obj", "res/grid.png", loader);
+  nrg::Entity cube{cubeModel, glm::vec3(3.0f, 2.0f, -8.0f), 0.0f, 0.0f, 0.0f,
+                   1.0f};
+
+  auto monkeyModel =
+      loadTexturedModel("res/monkey.obj", "res/monkey.png", loader);
+  nrg::Entity monkey{
+      monkeyModel, glm::vec3(-1.0f, -2.0f, -3.0f), 0.0f, 0.0f, 0.0f, 1.0f};
+
   nrg::StaticShader shader;
   nrg::Renderer renderer{display};
   nrg::Camera camera;
@@ -31,12 +50,14 @@ int main() {
 
   while (!display.shouldClose()) {
     camera.move(display.window());
-    entity.increaseRotation(1.0f, 1.0f, 0.0f);
+    sphere.increaseRotation(1.0f, 1.0f, 0.0f);
     renderer.prepare();
     shader.start();
     shader.loadView(camera);
     shader.loadLight(light);
-    renderer.render(entity, shader);
+    renderer.render(sphere, shader);
+    renderer.render(cube, shader);
+    renderer.render(monkey, shader);
     shader.stop();
     display.update();
   }
