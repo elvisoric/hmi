@@ -29,12 +29,19 @@ class StaticShader : public ShaderProgram {
     loadUniform(locationLightColor_, light.color());
   }
 
+  void loadShine(float damper, float reflectivity) const {
+    loadUniform(locationReflectivity_, reflectivity);
+    loadUniform(locationShineDamper_, damper);
+  }
+
   void getAllUniformLocations() override {
     locationTransformation_ = getUniformLocation("transformationMatrix");
     locationProjection_ = getUniformLocation("projection");
     locationView_ = getUniformLocation("view");
     locationLightPosition_ = getUniformLocation("lightPosition");
     locationLightColor_ = getUniformLocation("lightColor");
+    locationReflectivity_ = getUniformLocation("reflectivity");
+    locationShineDamper_ = getUniformLocation("shineDamper");
   }
 
  protected:
@@ -52,6 +59,8 @@ class StaticShader : public ShaderProgram {
   unsigned int locationView_;
   unsigned int locationLightPosition_;
   unsigned int locationLightColor_;
+  unsigned int locationShineDamper_;
+  unsigned int locationReflectivity_;
 };
 }  // namespace nrg
 #endif  // NRG_STATIC_SHADER_H

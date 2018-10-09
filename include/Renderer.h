@@ -12,7 +12,7 @@ class Renderer {
  public:
   Renderer(const Display& diplay);
   void prepare();
-  void render(const Entity& entity, StaticShader& shader) const;
+  void render(Entity& entity, StaticShader& shader) const;
 
  private:
   glm::mat4 projection_;

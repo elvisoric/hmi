@@ -9,7 +9,7 @@ class TexturedModel {
   TexturedModel(const RawModel& model, const ModelTexture& texture)
       : rawModel_{model}, texture_{texture} {}
   const RawModel& rawModel() const { return rawModel_; }
-  const ModelTexture& texture() const { return texture_; }
+  ModelTexture& texture() { return texture_; }
 
  private:
   RawModel rawModel_;

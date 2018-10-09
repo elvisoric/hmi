@@ -29,28 +29,36 @@ int main() {
 
   auto sphereModel =
       loadTexturedModel("res/sphere.obj", "res/sphere.png", loader);
+  sphereModel.texture().reflectivity(1);
+  sphereModel.texture().shineDamper(32);
   nrg::Entity sphere{
       sphereModel, glm::vec3(0.0f, 0.0f, -5.0f), 0.0f, 0.0f, 0.0f, 1.0f};
 
   auto cubeModel = loadTexturedModel("res/cube.obj", "res/grid.png", loader);
+  cubeModel.texture().reflectivity(1);
+  cubeModel.texture().shineDamper(256);
   nrg::Entity cube{cubeModel, glm::vec3(3.0f, 2.0f, -8.0f), 0.0f, 0.0f, 0.0f,
                    1.0f};
 
   auto monkeyModel =
       loadTexturedModel("res/monkey.obj", "res/monkey.png", loader);
+  monkeyModel.texture().reflectivity(1);
+  monkeyModel.texture().shineDamper(32);
   nrg::Entity monkey{
       monkeyModel, glm::vec3(-1.0f, -2.0f, -3.0f), 0.0f, 0.0f, 0.0f, 1.0f};
 
   nrg::StaticShader shader;
   nrg::Renderer renderer{display};
   nrg::Camera camera;
-  nrg::Light light{glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(1.0f)};
+  nrg::Light light{glm::vec3(5.0f, 0.0f, 0.0f), glm::vec3(1.0f)};
 
   glEnable(GL_DEPTH_TEST);
 
   while (!display.shouldClose()) {
     camera.move(display.window());
     sphere.increaseRotation(1.0f, 1.0f, 0.0f);
+    cube.increaseRotation(1.0f, 0.45f, 0.1f);
+    monkey.increaseRotation(1.0f, 0.3f, 0.7f);
     renderer.prepare();
     shader.start();
     shader.loadView(camera);

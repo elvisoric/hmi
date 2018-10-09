@@ -16,7 +16,7 @@ void Renderer::prepare() {
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
-void Renderer::render(const Entity& entity, StaticShader& shader) const {
+void Renderer::render(Entity& entity, StaticShader& shader) const {
   auto& model = entity.model();
   auto& rawModel = model.rawModel();
   glBindVertexArray(rawModel.vaoID());
@@ -28,6 +28,8 @@ void Renderer::render(const Entity& entity, StaticShader& shader) const {
                                 entity.rotZ(), entity.scale());
   shader.loadTransformation(transform);
   shader.loadProjection(projection_);
+  shader.loadShine(model.texture().shineDamper(),
+                   model.texture().reflectivity());
   glActiveTexture(GL_TEXTURE0);
   glBindTexture(GL_TEXTURE_2D, model.texture().id());
   glDrawElements(GL_TRIANGLES, rawModel.vertexCount(), GL_UNSIGNED_INT, 0);

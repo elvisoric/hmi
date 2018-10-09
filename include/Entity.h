@@ -16,7 +16,7 @@ class Entity {
         rotZ_{rotZ},
         scale_{scale} {}
 
-  inline const TexturedModel& model() const { return model_; }
+  inline TexturedModel& model() { return model_; }
   inline const glm::vec3 position() const { return position_; }
   inline float rotX() const { return rotX_; }
   inline float rotY() const { return rotY_; }
