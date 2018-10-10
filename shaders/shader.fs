@@ -12,14 +12,27 @@ in vec3 toCameraVector;
 uniform float shineDamper;
 uniform float reflectivity;
 
+uniform float useAmbientLight;
+uniform float useDiffuseLight;
+uniform float useSpecularLight;
+uniform float useLight;
+
 void main()
 {
     vec3 unitNormal = normalize(surfaceNormal);
     vec3 unitLightVector = normalize(toLightVector);
 
-    float nDot1 = dot(unitNormal, unitLightVector);
-    float brightness = max(nDot1, 0.0);
-    vec3 diffuse = brightness * lightColor;
+    float ambientFactor = 0.0;
+    vec3 diffuse;
+    if(useAmbientLight >0.5){
+        ambientFactor = 0.2;
+    }
+    float brightness = ambientFactor;
+    if(useDiffuseLight > 0.5){
+        float nDot1 = dot(unitNormal, unitLightVector);
+        brightness = max(nDot1, ambientFactor);
+    }
+    diffuse = brightness * lightColor;
 
     vec3 unitVectorToCamera = normalize(toCameraVector);
     vec3 lightDirection = -unitLightVector;
@@ -28,7 +41,13 @@ void main()
     float specularFactor = dot(reflectedLightDirection, unitVectorToCamera);
     specularFactor = max(specularFactor, 0.0);
     float dampedFactor = pow(specularFactor, shineDamper);
-    vec3 finalSpecular = dampedFactor * reflectivity * lightColor;
+    float useSpecularFactor = 0.0;
+    if(useSpecularLight >0.5) useSpecularFactor= 1.0;
+    vec3 finalSpecular = useSpecularFactor * dampedFactor * reflectivity * lightColor;
 
-    FragColor = vec4(diffuse, 1.0) * texture(textureSampler, TexCoords) + vec4(finalSpecular, 1.0);
+    if(useLight > 0.5){
+        FragColor = vec4(diffuse, 1.0) * texture(textureSampler, TexCoords) + vec4(finalSpecular, 1.0);
+    }else{
+        FragColor = texture(textureSampler, TexCoords);
+    }
 }

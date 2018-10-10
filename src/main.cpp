@@ -48,6 +48,10 @@ int main() {
       monkeyModel, glm::vec3(-1.0f, -2.0f, -3.0f), 0.0f, 0.0f, 0.0f, 1.0f};
 
   nrg::StaticShader shader;
+  shader.useAmbient(false);
+  shader.useDiffuse(false);
+  shader.useSpecular(false);
+  shader.useLight(false);
   nrg::Renderer renderer{display};
   nrg::Camera camera;
   nrg::Light light{glm::vec3(5.0f, 0.0f, 0.0f), glm::vec3(1.0f)};
@@ -56,6 +60,7 @@ int main() {
 
   while (!display.shouldClose()) {
     camera.move(display.window());
+    shader.processInput(display.window());
     sphere.increaseRotation(1.0f, 1.0f, 0.0f);
     cube.increaseRotation(1.0f, 0.45f, 0.1f);
     monkey.increaseRotation(1.0f, 0.3f, 0.7f);

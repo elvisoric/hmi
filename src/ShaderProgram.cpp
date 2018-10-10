@@ -83,8 +83,8 @@ void ShaderProgram::linkProgram() const {
 }
 
 void ShaderProgram::loadUniform(unsigned int location, bool value) const {
-  float toLoad = 0;
-  if (value) toLoad = 1;
+  float toLoad = 0.0f;
+  if (value) toLoad = 1.0f;
   glUniform1f(location, value);
 }
 
