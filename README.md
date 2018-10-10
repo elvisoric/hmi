@@ -11,3 +11,4 @@ Napredna Racunarska Grafika - Zavrsni rad
 3. blending
 4. animation
 5. improve camera (introduce FPS - first person shooter camera)
+6. add materials
