@@ -24,11 +24,23 @@ GLFWwindow* createWindow(float width, float height, const std::string& title) {
   }
   return window;
 }
+
+void framebufferSizeCallback(GLFWwindow* window, int width, int height) {
+  nrg::FramebufferChangeSubject::instance().notify(width, height);
+}
+
 }  // anonymous namespace
 
 namespace nrg {
 Display::Display(GLFWwindow* window, float width, float height)
-    : window_{window}, width_{width}, height_{height} {}
+    : window_{window}, width_{width}, height_{height} {
+  glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
+  auto f = [this](int width, int height) {
+    width_ = width;
+    height_ = height;
+  };
+  FramebufferChangeSubject::instance().subscribe(f);
+}
 Display::~Display() { glfwDestroyWindow(window_); }
 
 Display createDisplay(float width, float height) {

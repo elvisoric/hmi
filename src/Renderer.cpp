@@ -10,6 +10,11 @@ namespace nrg {
 Renderer::Renderer(const Display& display) {
   projection_ = glm::perspective(
       fieldOfView_, display.width() / display.height(), nearPlane_, farPlane_);
+  auto f = [this](int width, int height) {
+    projection_ = glm::perspective(fieldOfView_, (float)width / (float)height,
+                                   nearPlane_, farPlane_);
+  };
+  FramebufferChangeSubject::instance().subscribe(f);
 }
 void Renderer::prepare() {
   glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
