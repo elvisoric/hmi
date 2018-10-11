@@ -37,6 +37,11 @@ void Renderer::render(Entity& entity, StaticShader& shader) const {
                    model.texture().reflectivity());
   glActiveTexture(GL_TEXTURE0);
   glBindTexture(GL_TEXTURE_2D, model.texture().id());
+  shader.loadUseSpecularMap(model.texture().hasSpecularMap());
+  if (model.texture().hasSpecularMap()) {
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, model.texture().specularMap());
+  }
   glDrawElements(GL_TRIANGLES, rawModel.vertexCount(), GL_UNSIGNED_INT, 0);
   glDisableVertexAttribArray(0);
   glDisableVertexAttribArray(1);

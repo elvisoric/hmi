@@ -62,6 +62,10 @@ class StaticShader : public ShaderProgram {
     stop();
   }
 
+  void loadUseSpecularMap(bool value) const {
+    loadUniform(locationUsesSpecularMap_, value);
+  }
+
   void getAllUniformLocations() override {
     locationTransformation_ = getUniformLocation("transformationMatrix");
     locationProjection_ = getUniformLocation("projection");
@@ -74,6 +78,10 @@ class StaticShader : public ShaderProgram {
     locationUseDiffuseLight_ = getUniformLocation("useDiffuseLight");
     locationUseSpecularLight_ = getUniformLocation("useSpecularLight");
     locationUseLight_ = getUniformLocation("useLight");
+
+    locationSpecularMap_ = getUniformLocation("specularMap");
+    locationUsesSpecularMap_ = getUniformLocation("usesSpecularMap");
+    locationModelTexture_ = getUniformLocation("modelTexture");
   }
   void processInput(GLFWwindow* window) {
     if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS && ambientReleased_) {
@@ -121,6 +129,11 @@ class StaticShader : public ShaderProgram {
     }
   }
 
+  void connectTextureUnits() const {
+    loadUniform(locationModelTexture_, 0);
+    loadUniform(locationSpecularMap_, 1);
+  }
+
  protected:
   void bindAttributes() override {
     bindAttribute(0, "position");
@@ -143,6 +156,10 @@ class StaticShader : public ShaderProgram {
   unsigned int locationUseDiffuseLight_;
   unsigned int locationUseSpecularLight_;
   unsigned int locationUseLight_;
+
+  unsigned int locationSpecularMap_;
+  unsigned int locationUsesSpecularMap_;
+  unsigned int locationModelTexture_;
   bool useAmbient_;
   bool useDiffuse_;
   bool useSpecular_;

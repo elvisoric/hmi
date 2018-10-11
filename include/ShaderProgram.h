@@ -17,6 +17,7 @@ class ShaderProgram {
   void cleanUp() const;
 
   void loadUniform(unsigned int location, bool value) const;
+  void loadUniform(unsigned int location, int value) const;
   void loadUniform(unsigned int location, float value) const;
   void loadUniform(unsigned int location, const glm::vec3& value) const;
   void loadUniform(unsigned int location, const glm::mat4& value) const;

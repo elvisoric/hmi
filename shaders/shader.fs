@@ -2,8 +2,9 @@
 in vec2 TexCoords;
 
 out vec4 FragColor;
-uniform sampler2D textureSampler;
-
+uniform sampler2D modelTexture;
+uniform sampler2D specularMap;
+uniform float usesSpecularMap;
 uniform vec3 lightColor;
 in vec3 surfaceNormal;
 in vec3 toLightVector;
@@ -41,13 +42,19 @@ void main()
     float specularFactor = dot(reflectedLightDirection, unitVectorToCamera);
     specularFactor = max(specularFactor, 0.0);
     float dampedFactor = pow(specularFactor, shineDamper);
+
     float useSpecularFactor = 0.0;
     if(useSpecularLight >0.5) useSpecularFactor= 1.0;
     vec3 finalSpecular = useSpecularFactor * dampedFactor * reflectivity * lightColor;
 
+    if(usesSpecularMap >0.5){
+        vec4 mapInfo = texture(specularMap, TexCoords);
+        finalSpecular *= mapInfo.r;
+    }
+
     if(useLight > 0.5){
-        FragColor = vec4(diffuse, 1.0) * texture(textureSampler, TexCoords) + vec4(finalSpecular, 1.0);
+        FragColor = vec4(diffuse, 1.0) * texture(modelTexture, TexCoords) + vec4(finalSpecular, 1.0);
     }else{
-        FragColor = texture(textureSampler, TexCoords);
+        FragColor = texture(modelTexture, TexCoords);
     }
 }

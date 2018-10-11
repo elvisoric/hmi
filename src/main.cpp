@@ -49,16 +49,21 @@ int main() {
 
   auto barrelModel =
       loadTexturedModel("res/barrel.obj", "res/barrel.png", loader);
-  barrelModel.texture().reflectivity(1);
-  barrelModel.texture().shineDamper(32);
+  auto barrelSpecularMap = loader.loadTexture("res/barrelS.png");
+  barrelModel.texture().reflectivity(0.5f);
+  barrelModel.texture().shineDamper(10);
+  barrelModel.texture().specularMap(barrelSpecularMap);
   nrg::Entity barrel{
       barrelModel, glm::vec3(2.0f, -3.0f, -4.0f), 0.0f, 0.0f, 0.0f, 0.2f};
 
   nrg::StaticShader shader;
-  shader.useAmbient(true);
-  shader.useDiffuse(true);
-  shader.useSpecular(true);
-  shader.useLight(true);
+  shader.start();
+  shader.connectTextureUnits();
+  shader.stop();
+  shader.useAmbient(false);
+  shader.useDiffuse(false);
+  shader.useSpecular(false);
+  shader.useLight(false);
   nrg::Renderer renderer{display};
   nrg::Camera camera;
   nrg::Light light{glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f)};

@@ -88,6 +88,10 @@ void ShaderProgram::loadUniform(unsigned int location, bool value) const {
   glUniform1f(location, value);
 }
 
+void ShaderProgram::loadUniform(unsigned int location, int value) const {
+  glUniform1i(location, value);
+}
+
 void ShaderProgram::loadUniform(unsigned int location, float value) const {
   glUniform1f(location, value);
 }
