@@ -47,14 +47,21 @@ int main() {
   nrg::Entity monkey{
       monkeyModel, glm::vec3(-1.0f, -2.0f, -3.0f), 0.0f, 0.0f, 0.0f, 1.0f};
 
+  auto barrelModel =
+      loadTexturedModel("res/barrel.obj", "res/barrel.png", loader);
+  barrelModel.texture().reflectivity(1);
+  barrelModel.texture().shineDamper(32);
+  nrg::Entity barrel{
+      barrelModel, glm::vec3(2.0f, -3.0f, -4.0f), 0.0f, 0.0f, 0.0f, 0.2f};
+
   nrg::StaticShader shader;
-  shader.useAmbient(false);
-  shader.useDiffuse(false);
-  shader.useSpecular(false);
-  shader.useLight(false);
+  shader.useAmbient(true);
+  shader.useDiffuse(true);
+  shader.useSpecular(true);
+  shader.useLight(true);
   nrg::Renderer renderer{display};
   nrg::Camera camera;
-  nrg::Light light{glm::vec3(5.0f, 0.0f, 0.0f), glm::vec3(1.0f)};
+  nrg::Light light{glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f)};
 
   glEnable(GL_DEPTH_TEST);
 
@@ -64,6 +71,7 @@ int main() {
     sphere.increaseRotation(1.0f, 1.0f, 0.0f);
     cube.increaseRotation(1.0f, 0.45f, 0.1f);
     monkey.increaseRotation(1.0f, 0.3f, 0.7f);
+    barrel.increaseRotation(0.0f, 1.0f, 0.0f);
     renderer.prepare();
     shader.start();
     shader.loadView(camera);
@@ -71,6 +79,7 @@ int main() {
     renderer.render(sphere, shader);
     renderer.render(cube, shader);
     renderer.render(monkey, shader);
+    renderer.render(barrel, shader);
     shader.stop();
     display.update();
   }
