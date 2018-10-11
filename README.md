@@ -6,7 +6,6 @@ Napredna Racunarska Grafika - Zavrsni rad
 3 - specular lighting toggle switch
 
 >> TODO: 
-* specular maps (multi texturing)
 * blending
 * animation
 * improve camera (introduce FPS - first person shooter camera)
@@ -14,3 +13,4 @@ Napredna Racunarska Grafika - Zavrsni rad
 
 >> Done:
 * Change view port when changing screen resolution
+* specular maps (multi texturing)
