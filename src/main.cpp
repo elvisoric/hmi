@@ -74,6 +74,7 @@ int main() {
   glEnable(GL_DEPTH_TEST);
 
   while (!display.shouldClose()) {
+    display.processInput();
     camera.move(display.window());
     shader.processInput(display.window());
     renderer.prepare();

@@ -4,6 +4,7 @@ Napredna Racunarska Grafika - Zavrsni rad
 1 - ambient lighting toggle switch 
 2 - diffuse lighting toggle switch 
 3 - specular lighting toggle switch
+C - normal cursor toggle. show/hide cursor
 
 >> TODO: 
 * blending
@@ -12,7 +13,6 @@ Napredna Racunarska Grafika - Zavrsni rad
 * referential grid
 * proper animation handling
 * switch between real texture and gray one( or grid based)
-* improve camera (introduce FPS - first person shooter camera)
 * animate camera (circle or something like that)
 * blending 
 
@@ -22,3 +22,4 @@ Napredna Racunarska Grafika - Zavrsni rad
 * container texture for cube with specular map
 * turn off all animations
 * zoom - field of view (start angle is 45) min is 1.0 and max is 75.0
+* improve camera (introduce FPS - first person shooter camera)

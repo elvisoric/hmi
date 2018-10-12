@@ -43,6 +43,23 @@ class ScrollSubject {
   std::vector<SubscribeSignature> observers_;
 };
 
+class MouseInputSubject {
+ public:
+  static MouseInputSubject& instance() {
+    static MouseInputSubject instance = MouseInputSubject{};
+    return instance;
+  }
+  using SubscribeSignature = std::function<void(double, double)>;
+  void subscribe(SubscribeSignature f) { observers_.push_back(f); }
+  void notify(double x, double y) const {
+    for (auto& f : observers_) f(x, y);
+  }
+
+ private:
+  MouseInputSubject() {}
+  std::vector<SubscribeSignature> observers_;
+};
+
 class Display {
  public:
   Display(GLFWwindow* window, float width, float height);
@@ -57,11 +74,13 @@ class Display {
 
   inline float width() const { return width_; }
   inline float height() const { return height_; }
+  void processInput();
 
  private:
   GLFWwindow* window_;
   float width_;
   float height_;
+  bool normalCursor_{false};
 };
 
 Display createDisplay(float width, float height);

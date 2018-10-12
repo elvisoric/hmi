@@ -32,6 +32,9 @@ void framebufferSizeCallback(GLFWwindow* window, int width, int height) {
 void scrollCallback(GLFWwindow* window, double dx, double dy) {
   nrg::ScrollSubject::instance().notify(dx, dy);
 }
+void mouseCallback(GLFWwindow* window, double x, double y) {
+  nrg::MouseInputSubject::instance().notify(x, y);
+}
 
 }  // anonymous namespace
 
@@ -45,6 +48,8 @@ Display::Display(GLFWwindow* window, float width, float height)
   };
   FramebufferChangeSubject::instance().subscribe(f);
   glfwSetScrollCallback(window, scrollCallback);
+  glfwSetCursorPosCallback(window, mouseCallback);
+  glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 }
 Display::~Display() { glfwDestroyWindow(window_); }
 
@@ -52,5 +57,19 @@ Display createDisplay(float width, float height) {
   GLFWwindow* window =
       createWindow(width, height, "Napredna racunarska grafika");
   return Display{window, width, height};
+}
+
+void Display::processInput() {
+  if (glfwGetKey(window_, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+    glfwSetWindowShouldClose(window_, true);
+  if (glfwGetKey(window_, GLFW_KEY_C) == GLFW_PRESS) {
+    if (normalCursor_) {
+      glfwSetInputMode(window_, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
+    } else {
+      glfwSetInputMode(window_, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+    }
+    normalCursor_ = !normalCursor_;
+  }
 }
 }  // namespace nrg
