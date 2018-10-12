@@ -8,8 +8,16 @@ Napredna Racunarska Grafika - Zavrsni rad
 >> TODO: 
 * blending
 * animation
-* improve camera (introduce FPS - first person shooter camera)
 * add materials
+* container texture for cube with specular map
+* referential grid
+* zoom - field of view 
+* turn off all animations
+* proper animation handling
+* switch between real texture and gray one( or grid based)
+* improve camera (introduce FPS - first person shooter camera)
+* animate camera (circle or something like that)
+* blending 
 
 >> Done:
 * Change view port when changing screen resolution

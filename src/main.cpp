@@ -32,12 +32,15 @@ int main() {
   sphereModel.texture().reflectivity(1);
   sphereModel.texture().shineDamper(32);
   nrg::Entity sphere{
-      sphereModel, glm::vec3(0.0f, 0.0f, -5.0f), 0.0f, 0.0f, 0.0f, 1.0f};
+      sphereModel, glm::vec3(2.0f, 3.0f, -8.0f), 0.0f, 0.0f, 0.0f, 1.0f};
 
-  auto cubeModel = loadTexturedModel("res/cube.obj", "res/grid.png", loader);
+  auto cubeModel =
+      loadTexturedModel("res/cube.obj", "res/container.png", loader);
+  auto cubeSpecular = loader.loadTexture("res/container_specular.png");
   cubeModel.texture().reflectivity(1);
-  cubeModel.texture().shineDamper(256);
-  nrg::Entity cube{cubeModel, glm::vec3(3.0f, 2.0f, -8.0f), 0.0f, 0.0f, 0.0f,
+  cubeModel.texture().shineDamper(64);
+  cubeModel.texture().specularMap(cubeSpecular);
+  nrg::Entity cube{cubeModel, glm::vec3(0.0f, 0.0f, -6.0f), 0.0f, 0.0f, 0.0f,
                    1.0f};
 
   auto monkeyModel =
