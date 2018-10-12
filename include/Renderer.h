@@ -15,8 +15,9 @@ class Renderer {
   void render(Entity& entity, StaticShader& shader) const;
 
  private:
+  const Display& display_;
   glm::mat4 projection_;
-  float fieldOfView_{70.0f};
+  float fieldOfView_{45.0f};
   float nearPlane_{0.1f};
   float farPlane_{100.0f};
 };

@@ -29,6 +29,10 @@ void framebufferSizeCallback(GLFWwindow* window, int width, int height) {
   nrg::FramebufferChangeSubject::instance().notify(width, height);
 }
 
+void scrollCallback(GLFWwindow* window, double dx, double dy) {
+  nrg::ScrollSubject::instance().notify(dx, dy);
+}
+
 }  // anonymous namespace
 
 namespace nrg {
@@ -40,6 +44,7 @@ Display::Display(GLFWwindow* window, float width, float height)
     height_ = height;
   };
   FramebufferChangeSubject::instance().subscribe(f);
+  glfwSetScrollCallback(window, scrollCallback);
 }
 Display::~Display() { glfwDestroyWindow(window_); }
 

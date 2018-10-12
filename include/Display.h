@@ -26,6 +26,23 @@ class FramebufferChangeSubject {
   std::vector<SubscribeSignature> observers_;
 };
 
+class ScrollSubject {
+ public:
+  static ScrollSubject& instance() {
+    static ScrollSubject instance = ScrollSubject{};
+    return instance;
+  }
+  using SubscribeSignature = std::function<void(double, double)>;
+  void subscribe(SubscribeSignature f) { observers_.push_back(f); }
+  void notify(double xoffset, double yoffset) const {
+    for (auto& f : observers_) f(xoffset, yoffset);
+  }
+
+ private:
+  ScrollSubject() {}
+  std::vector<SubscribeSignature> observers_;
+};
+
 class Display {
  public:
   Display(GLFWwindow* window, float width, float height);

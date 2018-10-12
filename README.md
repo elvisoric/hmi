@@ -10,7 +10,6 @@ Napredna Racunarska Grafika - Zavrsni rad
 * animation
 * add materials
 * referential grid
-* zoom - field of view 
 * proper animation handling
 * switch between real texture and gray one( or grid based)
 * improve camera (introduce FPS - first person shooter camera)
@@ -22,3 +21,4 @@ Napredna Racunarska Grafika - Zavrsni rad
 * specular maps (multi texturing)
 * container texture for cube with specular map
 * turn off all animations
+* zoom - field of view (start angle is 45) min is 1.0 and max is 75.0

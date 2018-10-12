@@ -7,14 +7,29 @@
 #include <glad/glad.h>
 
 namespace nrg {
-Renderer::Renderer(const Display& display) {
-  projection_ = glm::perspective(
-      fieldOfView_, display.width() / display.height(), nearPlane_, farPlane_);
+Renderer::Renderer(const Display& display) : display_{display} {
+  projection_ = glm::perspective(glm::radians(fieldOfView_),
+                                 display.width() / display.height(), nearPlane_,
+                                 farPlane_);
   auto f = [this](int width, int height) {
-    projection_ = glm::perspective(fieldOfView_, (float)width / (float)height,
-                                   nearPlane_, farPlane_);
+    projection_ =
+        glm::perspective(glm::radians(fieldOfView_),
+                         (float)width / (float)height, nearPlane_, farPlane_);
   };
   FramebufferChangeSubject::instance().subscribe(f);
+
+  auto fovUpdate = [this](double xoffset, double yoffset) {
+    std::cout << "Field of View: " << fieldOfView_ << std::endl;
+    if (fieldOfView_ >= 1.0f && fieldOfView_ <= 75.0f) {
+      fieldOfView_ -= yoffset;
+    }
+    if (fieldOfView_ <= 1.0f) fieldOfView_ = 1.0f;
+    if (fieldOfView_ >= 75.0f) fieldOfView_ = 75.0f;
+    projection_ = glm::perspective(glm::radians(fieldOfView_),
+                                   display_.width() / display_.height(),
+                                   nearPlane_, farPlane_);
+  };
+  ScrollSubject::instance().subscribe(fovUpdate);
 }
 void Renderer::prepare() {
   glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
