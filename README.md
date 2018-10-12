@@ -9,10 +9,8 @@ Napredna Racunarska Grafika - Zavrsni rad
 * blending
 * animation
 * add materials
-* container texture for cube with specular map
 * referential grid
 * zoom - field of view 
-* turn off all animations
 * proper animation handling
 * switch between real texture and gray one( or grid based)
 * improve camera (introduce FPS - first person shooter camera)
@@ -22,3 +20,5 @@ Napredna Racunarska Grafika - Zavrsni rad
 >> Done:
 * Change view port when changing screen resolution
 * specular maps (multi texturing)
+* container texture for cube with specular map
+* turn off all animations

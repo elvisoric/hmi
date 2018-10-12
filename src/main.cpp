@@ -40,7 +40,7 @@ int main() {
   cubeModel.texture().reflectivity(1);
   cubeModel.texture().shineDamper(64);
   cubeModel.texture().specularMap(cubeSpecular);
-  nrg::Entity cube{cubeModel, glm::vec3(0.0f, 0.0f, -6.0f), 0.0f, 0.0f, 0.0f,
+  nrg::Entity cube{cubeModel, glm::vec3(-1.0f, 0.0f, -6.0f), 0.0f, 0.0f, 0.0f,
                    1.0f};
 
   auto monkeyModel =
@@ -57,7 +57,7 @@ int main() {
   barrelModel.texture().shineDamper(10);
   barrelModel.texture().specularMap(barrelSpecularMap);
   nrg::Entity barrel{
-      barrelModel, glm::vec3(2.0f, -3.0f, -4.0f), 0.0f, 0.0f, 0.0f, 0.2f};
+      barrelModel, glm::vec3(2.0f, 0.0f, -4.0f), 0.0f, 0.0f, 0.0f, 0.2f};
 
   nrg::StaticShader shader;
   shader.start();
@@ -76,10 +76,6 @@ int main() {
   while (!display.shouldClose()) {
     camera.move(display.window());
     shader.processInput(display.window());
-    sphere.increaseRotation(1.0f, 1.0f, 0.0f);
-    cube.increaseRotation(1.0f, 0.45f, 0.1f);
-    monkey.increaseRotation(1.0f, 0.3f, 0.7f);
-    barrel.increaseRotation(0.0f, 1.0f, 0.0f);
     renderer.prepare();
     shader.start();
     shader.loadView(camera);
