@@ -72,7 +72,9 @@ int main() {
   shader.useSpecular(false);
   shader.useLight(false);
   nrg::Renderer renderer{display};
-  nrg::Camera camera;
+  nrg::FpsCamera fps;
+  nrg::BasicCamera basic;
+  nrg::CameraHolder cameraHolder{fps, basic};
   nrg::Light light{glm::vec3(0.0f, 3.0f, 4.0f), glm::vec3(1.0f)};
 
   nrg::ForwardBackAction forward1{7.0f, -15.0f};
@@ -85,7 +87,7 @@ int main() {
   while (!display.shouldClose()) {
     display.processInput();
     nrg::ActionSubject::instance().processInput(display.window());
-    camera.move(display.window());
+    cameraHolder.processInput(display.window());
     shader.processInput(display.window());
 
     forward1.process(sphere);
@@ -97,7 +99,7 @@ int main() {
 
     renderer.prepare();
     shader.start();
-    shader.loadView(camera);
+    shader.loadView(cameraHolder.camera());
     shader.loadLight(light);
     renderer.render(sphere, shader);
     renderer.render(sphere2, shader);

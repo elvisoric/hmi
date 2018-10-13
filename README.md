@@ -7,11 +7,11 @@ Napredna Racunarska Grafika - Zavrsni rad
 C - normal cursor toggle. show/hide cursor
 E - Enable/disable actions/animations
 WASD - camera movement
+V - switch between basic and fps cameras
 
 >> TODO: 
 * referential grid
 * animate camera (circle or something like that)
-* blending 
 
 >> Done:
 * Change view port when changing screen resolution

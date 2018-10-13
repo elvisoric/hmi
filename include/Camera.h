@@ -12,41 +12,8 @@ class Camera {
   Camera()
       : position_{0.0f, 0.0f, 5.0f},
         front_{0.0f, 0.0f, -1.0f},
-        up_{0.0f, 1.0f, 0.0f} {
-    auto f = [this](double x, double y) {
-      if (firstMove) {
-        lastX_ = x;
-        lastY_ = y;
-        firstMove = false;
-      }
-      float xoffset = x - lastX_;
-      float yoffset = lastY_ - y;  // y range from bottom to top
-      lastX_ = x;
-      lastY_ = y;
-      float sensitivity = 0.05f;
-      xoffset *= sensitivity;
-      yoffset *= sensitivity;
-      yaw_ += xoffset;
-      pitch_ += yoffset;
-      if (pitch() > 89.0f) pitch_ = 89.0f;
-      if (pitch() < -89.0f) pitch_ = -89.0f;
-      updateFront();
-    };
-    MouseInputSubject::instance().subscribe(f);
-  }
-  void move(GLFWwindow* window) {
-    // TODO: delta time between frames and than multiply with speed, to have
-    // constant movement on different platforms
-    float cameraSpeed = 0.05f;
-    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-      position_ += cameraSpeed * front_;
-    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-      position_ -= cameraSpeed * front_;
-    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-      position_ -= glm::normalize(glm::cross(front_, up_)) * cameraSpeed;
-    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-      position_ += glm::normalize(glm::cross(front_, up_)) * cameraSpeed;
-  }
+        up_{0.0f, 1.0f, 0.0f} {}
+
   inline const glm::vec3& position() const { return position_; }
 
   inline float pitch() const { return pitch_; }
@@ -56,14 +23,82 @@ class Camera {
     auto view = glm::lookAt(position_, position_ + front_, up_);
     return view;
   }
+  void active(bool a) { active_ = a; }
+  bool active() const { return active_; }
 
- private:
+  virtual void move(GLFWwindow* window) = 0;
+  virtual ~Camera() = default;
+
+ protected:
   glm::vec3 position_;
   glm::vec3 front_;
   glm::vec3 up_;
   float pitch_;
   float yaw_;
   float roll_;
+  bool active_{false};
+  float cameraSpeed_ = 0.05f;
+};
+
+class BasicCamera : public Camera {
+ public:
+  void move(GLFWwindow* window) override {
+    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+      position_.z -= cameraSpeed_;
+    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+      position_.z += cameraSpeed_;
+    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+      position_.x += cameraSpeed_;
+    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+      position_.x -= cameraSpeed_;
+    if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
+      position_.y -= cameraSpeed_;
+    if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
+      position_.y += cameraSpeed_;
+  }
+
+ private:
+};
+class FpsCamera : public Camera {
+ public:
+  FpsCamera() {
+    auto f = [this](double x, double y) {
+      if (active()) {
+        if (firstMove) {
+          lastX_ = x;
+          lastY_ = y;
+          firstMove = false;
+        }
+        float xoffset = x - lastX_;
+        float yoffset = lastY_ - y;  // y range from bottom to top
+        lastX_ = x;
+        lastY_ = y;
+        float sensitivity = 0.05f;
+        xoffset *= sensitivity;
+        yoffset *= sensitivity;
+        yaw_ += xoffset;
+        pitch_ += yoffset;
+        if (pitch() > 89.0f) pitch_ = 89.0f;
+        if (pitch() < -89.0f) pitch_ = -89.0f;
+        updateFront();
+      }
+    };
+    MouseInputSubject::instance().subscribe(f);
+  }
+  void move(GLFWwindow* window) override {
+    // TODO: delta time between frames and than multiply with speed, to have
+    // constant movement on different platforms
+    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+      position_ += cameraSpeed_ * front_;
+    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+      position_ -= cameraSpeed_ * front_;
+    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+      position_ -= glm::normalize(glm::cross(front_, up_)) * cameraSpeed_;
+    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+      position_ += glm::normalize(glm::cross(front_, up_)) * cameraSpeed_;
+  }
+
+ private:
   float lastX_{1024.0f / 2.0f}, lastY_{768.0f / 2.0f};
   bool firstMove{true};
   void updateFront() {
@@ -73,6 +108,48 @@ class Camera {
     f.z = cos(glm::radians(pitch())) * sin(glm::radians(yaw()));
     front_ = glm::normalize(f);
   }
+};
+class CameraHolder {
+ public:
+  CameraHolder(Camera& fps, Camera& basic)
+      : fps_{fps}, basic_{basic}, current_{&fps_} {
+    fps_.active(true);
+    basic_.active(false);
+  }
+  Camera& camera() { return *current_; }
+  void processInput(GLFWwindow* window) {
+    if (glfwGetKey(window, GLFW_KEY_V) == GLFW_PRESS && released_) {
+      released_ = false;
+      pressed_ = true;
+      change();
+    }
+
+    if (glfwGetKey(window, GLFW_KEY_V) == GLFW_RELEASE && pressed_) {
+      released_ = true;
+      pressed_ = false;
+    }
+    camera().move(window);
+  }
+  void change() {
+    if (fps_.active()) {
+      std::cout << "Activating Basic camera" << std::endl;
+      current_ = &basic_;
+      fps_.active(false);
+      basic_.active(true);
+    } else {
+      std::cout << "Activating FPS camera" << std::endl;
+      current_ = &fps_;
+      fps_.active(true);
+      basic_.active(false);
+    }
+  }
+
+ private:
+  Camera& fps_;
+  Camera& basic_;
+  Camera* current_;
+  bool released_{true};
+  bool pressed_{false};
 };
 }  // namespace nrg
 
