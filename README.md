@@ -5,14 +5,11 @@ Napredna Racunarska Grafika - Zavrsni rad
 2 - diffuse lighting toggle switch 
 3 - specular lighting toggle switch
 C - normal cursor toggle. show/hide cursor
+E - Enable/disable actions/animations
+WASD - camera movement
 
 >> TODO: 
-* blending
-* animation
-* add materials
 * referential grid
-* proper animation handling
-* switch between real texture and gray one( or grid based)
 * animate camera (circle or something like that)
 * blending 
 
@@ -23,3 +20,4 @@ C - normal cursor toggle. show/hide cursor
 * turn off all animations
 * zoom - field of view (start angle is 45) min is 1.0 and max is 75.0
 * improve camera (introduce FPS - first person shooter camera)
+* proper animation handling - enable /disable all animations

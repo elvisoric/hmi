@@ -100,8 +100,6 @@ ObjData load(const std::string& filepath) {
         auto normal = parseVec3(line.substr(3));
         normals.push_back(normal);
       } else if (startsWith(line, "f ")) {
-        // texturesArray.resize(vertices.size() * 2);
-        // normalsArray.resize(vertices.size() * 3);
         break;
       }
     }

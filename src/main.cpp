@@ -35,6 +35,9 @@ int main() {
   nrg::Entity sphere{
       sphereModel, glm::vec3(2.0f, 3.0f, -8.0f), 0.0f, 0.0f, 0.0f, 1.0f};
 
+  nrg::Entity sphere2{
+      sphereModel, glm::vec3(-2.0f, 3.0f, -8.0f), 0.0f, 0.0f, 0.0f, 1.0f};
+
   auto cubeModel =
       loadTexturedModel("res/cube.obj", "res/container.png", loader);
   auto cubeSpecular = loader.loadTexture("res/container_specular.png");
@@ -72,7 +75,8 @@ int main() {
   nrg::Camera camera;
   nrg::Light light{glm::vec3(0.0f, 3.0f, 4.0f), glm::vec3(1.0f)};
 
-  nrg::ForwardBackAction action{7.0f, -15.0f};
+  nrg::ForwardBackAction forward1{7.0f, -15.0f};
+  nrg::ForwardBackAction forward2{7.0f, -15.0f};
   nrg::RotateAction rotateY{0.0f, 1.0f, 0.0f};
   nrg::RotateAction rotateXY{1.0f, 0.0f, 1.0f};
 
@@ -80,19 +84,23 @@ int main() {
 
   while (!display.shouldClose()) {
     display.processInput();
+    nrg::ActionSubject::instance().processInput(display.window());
     camera.move(display.window());
     shader.processInput(display.window());
 
-    action.process(sphere);
+    forward1.process(sphere);
     rotateY.process(barrel);
     rotateXY.process(cube);
     rotateY.process(monkey);
+    rotateY.process(sphere2);
+    forward2.process(sphere2);
 
     renderer.prepare();
     shader.start();
     shader.loadView(camera);
     shader.loadLight(light);
     renderer.render(sphere, shader);
+    renderer.render(sphere2, shader);
     renderer.render(cube, shader);
     renderer.render(monkey, shader);
     renderer.render(barrel, shader);
