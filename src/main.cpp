@@ -1,3 +1,4 @@
+#include <Action.h>
 #include <Display.h>
 #include <Entity.h>
 #include <Loader.h>
@@ -69,7 +70,11 @@ int main() {
   shader.useLight(false);
   nrg::Renderer renderer{display};
   nrg::Camera camera;
-  nrg::Light light{glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f)};
+  nrg::Light light{glm::vec3(0.0f, 3.0f, 4.0f), glm::vec3(1.0f)};
+
+  nrg::ForwardBackAction action{7.0f, -15.0f};
+  nrg::RotateAction rotateY{0.0f, 1.0f, 0.0f};
+  nrg::RotateAction rotateXY{1.0f, 0.0f, 1.0f};
 
   glEnable(GL_DEPTH_TEST);
 
@@ -77,6 +82,12 @@ int main() {
     display.processInput();
     camera.move(display.window());
     shader.processInput(display.window());
+
+    action.process(sphere);
+    rotateY.process(barrel);
+    rotateXY.process(cube);
+    rotateY.process(monkey);
+
     renderer.prepare();
     shader.start();
     shader.loadView(camera);

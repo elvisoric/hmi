@@ -10,7 +10,7 @@ namespace nrg {
 class Camera {
  public:
   Camera()
-      : position_{0.0f, 0.0f, 3.0f},
+      : position_{0.0f, 0.0f, 5.0f},
         front_{0.0f, 0.0f, -1.0f},
         up_{0.0f, 1.0f, 0.0f} {
     auto f = [this](double x, double y) {
