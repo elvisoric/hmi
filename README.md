@@ -8,10 +8,7 @@ C - normal cursor toggle. show/hide cursor
 E - Enable/disable actions/animations
 WASD - camera movement
 V - switch between basic and fps cameras
-
->> TODO: 
-* referential grid
-* animate camera (circle or something like that)
+F - rotate camera over the scene (hold F)
 
 >> Done:
 * Change view port when changing screen resolution
@@ -21,3 +18,5 @@ V - switch between basic and fps cameras
 * zoom - field of view (start angle is 45) min is 1.0 and max is 75.0
 * improve camera (introduce FPS - first person shooter camera)
 * proper animation handling - enable /disable all animations
+* add basic camera and functionality to switch between cameras
+* rotate camera over the scene in circle

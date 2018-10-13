@@ -20,24 +20,39 @@ class Camera {
   inline float yaw() const { return yaw_; }
   inline float roll() const { return roll_; }
   glm::mat4 view() const {
-    auto view = glm::lookAt(position_, position_ + front_, up_);
-    return view;
+    auto center = position_ + front_;
+    if (animate_) {
+      center = glm::vec3(0.0f);
+      return glm::lookAt(animatePosition_, center, up_);
+    }
+    return glm::lookAt(position_, center, up_);
   }
   void active(bool a) { active_ = a; }
   bool active() const { return active_; }
+  void enableAnimation() { animate_ = true; }
+  void disableAnimation() { animate_ = false; }
 
   virtual void move(GLFWwindow* window) = 0;
+  void animate() {
+    float radius = 20.0f;
+    float x = sin(glfwGetTime()) * radius;
+    float z = cos(glfwGetTime()) * radius;
+    animatePosition_.x = x;
+    animatePosition_.z = z;
+  }
   virtual ~Camera() = default;
 
  protected:
   glm::vec3 position_;
   glm::vec3 front_;
   glm::vec3 up_;
+  glm::vec3 animatePosition_;
   float pitch_;
   float yaw_;
   float roll_;
   bool active_{false};
   float cameraSpeed_ = 0.05f;
+  bool animate_{true};
 };
 
 class BasicCamera : public Camera {
@@ -128,7 +143,21 @@ class CameraHolder {
       released_ = true;
       pressed_ = false;
     }
-    camera().move(window);
+
+    if (glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS) {
+      camera().enableAnimation();
+      animate_ = true;
+    }
+    if (glfwGetKey(window, GLFW_KEY_F) == GLFW_RELEASE) {
+      camera().disableAnimation();
+      animate_ = false;
+    }
+
+    if (animate_) {
+      camera().animate();
+    } else {
+      camera().move(window);
+    }
   }
   void change() {
     if (fps_.active()) {
@@ -150,6 +179,7 @@ class CameraHolder {
   Camera* current_;
   bool released_{true};
   bool pressed_{false};
+  bool animate_{false};
 };
 }  // namespace nrg
 
