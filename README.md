@@ -6,7 +6,7 @@ Napredna Racunarska Grafika - Zavrsni rad
 3 - specular lighting toggle switch
 C - normal cursor toggle. show/hide cursor
 E - Enable/disable actions/animations
-WASD - camera movement
+WASD - camera movement (UP, DOWN)
 V - switch between basic and fps cameras
 F - rotate camera over the scene (hold F)
 
