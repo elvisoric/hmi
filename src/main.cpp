@@ -1,3 +1,19 @@
+#define IMGUI_IMPL_OPENGL_LOADER_GLAD
+
+#if defined(IMGUI_IMPL_OPENGL_LOADER_GL3W)
+#include <GL/gl3w.h>  // Initialize with gl3wInit()
+#elif defined(IMGUI_IMPL_OPENGL_LOADER_GLEW)
+#include <GL/glew.h>  // Initialize with glewInit()
+#elif defined(IMGUI_IMPL_OPENGL_LOADER_GLAD)
+#include <glad/glad.h>  // Initialize with gladLoadGL()
+#else
+#include IMGUI_IMPL_OPENGL_LOADER_CUSTOM
+#endif
+
+#include <imgui.h>
+#include <imgui_impl_glfw.h>
+#include <imgui_impl_opengl3.h>
+
 #include <Action.h>
 #include <Display.h>
 #include <Entity.h>
@@ -10,6 +26,25 @@
 #include <stb_image.h>
 #include <iostream>
 #include <vector>
+
+void renderImgui() {
+  ImGui::Render();
+  ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+}
+void imguiNewFrame() {
+  // Start the Dear ImGui frame
+  ImGui_ImplOpenGL3_NewFrame();
+  ImGui_ImplGlfw_NewFrame();
+  ImGui::NewFrame();
+}
+
+void imguiHelloWindow() {
+  ImGui::Begin("Hello, world!");  // Create a window called "Hello, world!"
+                                  // and append into it.
+  ImGui::Text("This is some useful text.");  // Display some text (you can
+                                             // use a format strings too)
+  ImGui::End();
+}
 
 nrg::TexturedModel loadTexturedModel(const std::string& objpath,
                                      const std::string& texturpath,
@@ -83,8 +118,26 @@ int main() {
   nrg::RotateAction rotateXY{1.0f, 0.0f, 1.0f};
 
   glEnable(GL_DEPTH_TEST);
+  IMGUI_CHECKVERSION();
+  ImGui::CreateContext();
+  ImGuiIO& io = ImGui::GetIO();
+  (void)io;
+  // io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;  // Enable Keyboard
+  // Controls io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;   // Enable
+  // Gamepad Controls
+  const char* glsl_version = "#version 150";
+  ImGui_ImplGlfw_InitForOpenGL(display.window(), true);
+  ImGui_ImplOpenGL3_Init(glsl_version);
+
+  // Setup style
+  ImGui::StyleColorsDark();
+  // ImGui::StyleColorsClassic();
 
   while (!display.shouldClose()) {
+    display.pollEvents();
+
+    imguiNewFrame();
+
     display.processInput();
     nrg::ActionSubject::instance().processInput(display.window());
     cameraHolder.processInput(display.window());
@@ -107,7 +160,15 @@ int main() {
     renderer.render(monkey, shader);
     renderer.render(barrel, shader);
     shader.stop();
+
+    imguiHelloWindow();
+    renderImgui();
     display.update();
   }
+
+  ImGui_ImplOpenGL3_Shutdown();
+  ImGui_ImplGlfw_Shutdown();
+  ImGui::DestroyContext();
+
   return 0;
 }

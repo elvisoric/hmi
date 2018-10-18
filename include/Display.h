@@ -65,10 +65,9 @@ class Display {
   Display(GLFWwindow* window, float width, float height);
   virtual ~Display();
 
-  inline void update() const {
-    glfwSwapBuffers(window_);
-    glfwPollEvents();
-  }
+  inline void pollEvents() const { glfwPollEvents(); }
+
+  inline void update() const { glfwSwapBuffers(window_); }
   inline bool shouldClose() const { return glfwWindowShouldClose(window_); }
   inline GLFWwindow* window() { return window_; }
 
