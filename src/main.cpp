@@ -46,6 +46,19 @@ void imguiHelloWindow() {
   ImGui::End();
 }
 
+void secondWindow() {
+  bool show_app_about = false;
+  ImGui::Begin("About Dear ImGui", &show_app_about,
+               ImGuiWindowFlags_AlwaysAutoResize);
+  ImGui::Text("Dear ImGui, %s", ImGui::GetVersion());
+  ImGui::Separator();
+  ImGui::Text("By Omar Cornut and all dear imgui contributors.");
+  ImGui::Text(
+      "Dear ImGui is licensed under the MIT License, see LICENSE for more "
+      "information.");
+  ImGui::End();
+}
+
 nrg::TexturedModel loadTexturedModel(const std::string& objpath,
                                      const std::string& texturpath,
                                      nrg::Loader& loader) {
@@ -133,10 +146,13 @@ int main() {
   ImGui::StyleColorsDark();
   // ImGui::StyleColorsClassic();
 
+  bool showDemoWindow = true;
   while (!display.shouldClose()) {
     display.pollEvents();
 
     imguiNewFrame();
+
+    ImGui::ShowDemoWindow(&showDemoWindow);
 
     display.processInput();
     nrg::ActionSubject::instance().processInput(display.window());

@@ -16,6 +16,7 @@ srcs = [
     'src/imgui_impl_glfw.cpp',
     'src/imgui_widgets.cpp',
     'src/imgui_draw.cpp',
+    'src/imgui_demo.cpp',
     'src/imgui_impl_opengl3.cpp']
 
 executable('nrg', srcs, include_directories:incdir, dependencies:[glfw_dep])
