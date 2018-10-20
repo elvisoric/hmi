@@ -11,16 +11,16 @@ class Entity {
          float rotY, float rotZ, float scale)
       : model_{model},
         position_{position},
-        rotX_{rotX},
-        rotY_{rotY},
-        rotZ_{rotZ},
+        rotation_{rotX, rotY, rotZ},
         scale_{scale} {}
 
   inline TexturedModel& model() { return model_; }
-  inline const glm::vec3 position() const { return position_; }
-  inline float rotX() const { return rotX_; }
-  inline float rotY() const { return rotY_; }
-  inline float rotZ() const { return rotZ_; }
+  inline glm::vec3& position() { return position_; }
+  inline glm::vec3& rotation() { return rotation_; }
+  inline float& scaling() { return scale_; }
+  inline float rotX() const { return rotation_.x; }
+  inline float rotY() const { return rotation_.y; }
+  inline float rotZ() const { return rotation_.z; }
   inline float scale() const { return scale_; }
 
   void increasePosition(float dx, float dy, float dz) {
@@ -30,15 +30,15 @@ class Entity {
   }
 
   void increaseRotation(float dx, float dy, float dz) {
-    rotX_ += dx;
-    rotY_ += dy;
-    rotZ_ += dz;
+    rotation_.x += dx;
+    rotation_.y += dy;
+    rotation_.z += dz;
   }
 
  private:
   TexturedModel model_;
   glm::vec3 position_;
-  float rotX_, rotY_, rotZ_;
+  glm::vec3 rotation_;
   float scale_;
 };
 }  // namespace nrg

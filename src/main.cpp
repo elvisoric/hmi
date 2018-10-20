@@ -38,24 +38,22 @@ void imguiNewFrame() {
   ImGui::NewFrame();
 }
 
-void imguiHelloWindow() {
-  ImGui::Begin("Hello, world!");  // Create a window called "Hello, world!"
-                                  // and append into it.
-  ImGui::Text("This is some useful text.");  // Display some text (you can
-                                             // use a format strings too)
-  ImGui::End();
-}
-
-void secondWindow() {
-  bool show_app_about = false;
-  ImGui::Begin("About Dear ImGui", &show_app_about,
-               ImGuiWindowFlags_AlwaysAutoResize);
-  ImGui::Text("Dear ImGui, %s", ImGui::GetVersion());
-  ImGui::Separator();
-  ImGui::Text("By Omar Cornut and all dear imgui contributors.");
-  ImGui::Text(
-      "Dear ImGui is licensed under the MIT License, see LICENSE for more "
-      "information.");
+void transformationsWindow(glm::vec3& position, glm::vec3& rotation,
+                           float& scale) {
+  ImGui::Begin("Transformations");
+  if (ImGui::CollapsingHeader("Translate")) {
+    ImGui::InputFloat("X", &position.x, 0.05f, 1.0f);
+    ImGui::InputFloat("Y", &position.y, 0.05f, 1.0f);
+    ImGui::InputFloat("Z", &position.z, 0.05f, 1.0f);
+  }
+  if (ImGui::CollapsingHeader("Rotate")) {
+    ImGui::SliderFloat("X angle", &rotation.x, -180.0f, 180.0f, "%.2f", 2.0f);
+    ImGui::SliderFloat("Y angle", &rotation.y, -180.0f, 180.0f, "%.2f", 2.0f);
+    ImGui::SliderFloat("Z angle", &rotation.z, -180.0f, 180.0f, "%.2f", 2.0f);
+  }
+  if (ImGui::CollapsingHeader("Scale")) {
+    ImGui::InputFloat("Factor", &scale, 0.05f, 1.0f);
+  }
   ImGui::End();
 }
 
@@ -71,20 +69,8 @@ nrg::TexturedModel loadTexturedModel(const std::string& objpath,
 }
 
 int main() {
-  // stbi_set_flip_vertically_on_load(true);
-
   nrg::Display display = nrg::createDisplay(1024.0f, 768.0f);
   nrg::Loader loader;
-
-  auto sphereModel =
-      loadTexturedModel("res/sphere.obj", "res/sphere.png", loader);
-  sphereModel.texture().reflectivity(1);
-  sphereModel.texture().shineDamper(32);
-  nrg::Entity sphere{
-      sphereModel, glm::vec3(2.0f, 3.0f, -8.0f), 0.0f, 0.0f, 0.0f, 1.0f};
-
-  nrg::Entity sphere2{
-      sphereModel, glm::vec3(-2.0f, 3.0f, -8.0f), 0.0f, 0.0f, 0.0f, 1.0f};
 
   auto cubeModel =
       loadTexturedModel("res/cube.obj", "res/container.png", loader);
@@ -92,24 +78,7 @@ int main() {
   cubeModel.texture().reflectivity(1);
   cubeModel.texture().shineDamper(64);
   cubeModel.texture().specularMap(cubeSpecular);
-  nrg::Entity cube{cubeModel, glm::vec3(-1.0f, 0.0f, -6.0f), 0.0f, 0.0f, 0.0f,
-                   1.0f};
-
-  auto monkeyModel =
-      loadTexturedModel("res/monkey.obj", "res/monkey.png", loader);
-  monkeyModel.texture().reflectivity(1);
-  monkeyModel.texture().shineDamper(32);
-  nrg::Entity monkey{
-      monkeyModel, glm::vec3(-1.0f, -2.0f, -3.0f), 0.0f, 0.0f, 0.0f, 1.0f};
-
-  auto barrelModel =
-      loadTexturedModel("res/barrel.obj", "res/barrel.png", loader);
-  auto barrelSpecularMap = loader.loadTexture("res/barrelS.png");
-  barrelModel.texture().reflectivity(0.5f);
-  barrelModel.texture().shineDamper(10);
-  barrelModel.texture().specularMap(barrelSpecularMap);
-  nrg::Entity barrel{
-      barrelModel, glm::vec3(2.0f, 0.0f, -4.0f), 0.0f, 0.0f, 0.0f, 0.2f};
+  nrg::Entity cube{cubeModel, glm::vec3(0.0f), 0.0f, 0.0f, 0.0f, 1.0f};
 
   nrg::StaticShader shader;
   shader.start();
@@ -123,12 +92,8 @@ int main() {
   nrg::FpsCamera fps;
   nrg::BasicCamera basic;
   nrg::CameraHolder cameraHolder{fps, basic};
+  cameraHolder.change();
   nrg::Light light{glm::vec3(0.0f, 3.0f, 4.0f), glm::vec3(1.0f)};
-
-  nrg::ForwardBackAction forward1{7.0f, -15.0f};
-  nrg::ForwardBackAction forward2{7.0f, -15.0f};
-  nrg::RotateAction rotateY{0.0f, 1.0f, 0.0f};
-  nrg::RotateAction rotateXY{1.0f, 0.0f, 1.0f};
 
   glEnable(GL_DEPTH_TEST);
   IMGUI_CHECKVERSION();
@@ -138,13 +103,11 @@ int main() {
   // io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;  // Enable Keyboard
   // Controls io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;   // Enable
   // Gamepad Controls
-  const char* glsl_version = "#version 150";
+  const char* glsl_version = "#version 330";
   ImGui_ImplGlfw_InitForOpenGL(display.window(), true);
   ImGui_ImplOpenGL3_Init(glsl_version);
 
-  // Setup style
   ImGui::StyleColorsDark();
-  // ImGui::StyleColorsClassic();
 
   bool showDemoWindow = true;
   while (!display.shouldClose()) {
@@ -159,25 +122,16 @@ int main() {
     cameraHolder.processInput(display.window());
     shader.processInput(display.window());
 
-    forward1.process(sphere);
-    rotateY.process(barrel);
-    rotateXY.process(cube);
-    rotateY.process(monkey);
-    rotateY.process(sphere2);
-    forward2.process(sphere2);
-
     renderer.prepare();
     shader.start();
     shader.loadView(cameraHolder.camera());
     shader.loadLight(light);
-    renderer.render(sphere, shader);
-    renderer.render(sphere2, shader);
+
     renderer.render(cube, shader);
-    renderer.render(monkey, shader);
-    renderer.render(barrel, shader);
+
     shader.stop();
 
-    imguiHelloWindow();
+    transformationsWindow(cube.position(), cube.rotation(), cube.scaling());
     renderImgui();
     display.update();
   }

@@ -10,8 +10,8 @@ namespace nrg {
 class Camera {
  public:
   Camera()
-      : position_{0.0f, 0.0f, 5.0f},
-        front_{0.0f, 0.0f, -1.0f},
+      : position_{0.0f, 5.0f, 15.0f},
+        front_{0.0f, -4.0f, -15.0f},
         up_{0.0f, 1.0f, 0.0f} {}
 
   inline const glm::vec3& position() const { return position_; }

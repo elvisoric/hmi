@@ -79,7 +79,6 @@ class Display {
   GLFWwindow* window_;
   float width_;
   float height_;
-  bool normalCursor_{false};
 };
 
 Display createDisplay(float width, float height);
