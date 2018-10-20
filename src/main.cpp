@@ -60,6 +60,16 @@ void transformationsWindow(glm::vec3& position, glm::vec3& rotation,
   ImGui::End();
 }
 
+void environmentWindow(glm::vec3& color) {
+  ImGui::Begin("Environment");
+  float col1[3] = {color.x, color.y, color.z};
+  ImGui::ColorEdit3("Grid color", col1);
+  color.x = col1[0];
+  color.y = col1[1];
+  color.z = col1[2];
+  ImGui::End();
+}
+
 nrg::TexturedModel loadTexturedModel(const std::string& objpath,
                                      const std::string& texturpath,
                                      nrg::Loader& loader) {
@@ -103,6 +113,10 @@ int main() {
   nrg::Light light{glm::vec3(0.0f, 3.0f, 4.0f), glm::vec3(1.0f)};
 
   nrg::BasicShader basicShader;
+  glm::vec3 gridColor{1.0};
+  basicShader.start();
+  basicShader.color(gridColor);
+  basicShader.stop();
 
   glEnable(GL_DEPTH_TEST);
   IMGUI_CHECKVERSION();
@@ -141,11 +155,13 @@ int main() {
     shader.stop();
 
     basicShader.start();
+    basicShader.color(gridColor);
     basicShader.loadView(cameraHolder.camera());
     renderer.render(grid, basicShader);
     basicShader.stop();
 
     transformationsWindow(cube.position(), cube.rotation(), cube.scaling());
+    environmentWindow(gridColor);
     renderImgui();
     display.update();
   }

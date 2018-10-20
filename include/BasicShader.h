@@ -22,10 +22,18 @@ class BasicShader : public ShaderProgram {
     loadUniform(locationView_, camera.view());
   }
 
+  void color(const glm::vec3& color) {
+    loadUniform(locationColor_, color);
+    color_ = color;
+  }
+
+  inline glm::vec3 color() { return color_; }
+
   void getAllUniformLocations() override {
     locationTransformation_ = getUniformLocation("transformationMatrix");
     locationProjection_ = getUniformLocation("projection");
     locationView_ = getUniformLocation("view");
+    locationColor_ = getUniformLocation("color");
   }
 
  protected:
@@ -39,6 +47,8 @@ class BasicShader : public ShaderProgram {
   unsigned int locationTransformation_;
   unsigned int locationProjection_;
   unsigned int locationView_;
+  unsigned int locationColor_;
+  glm::vec3 color_;
 };
 }  // namespace nrg
 
