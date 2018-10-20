@@ -7,12 +7,14 @@
 namespace nrg {
 class Entity;
 class StaticShader;
+class BasicShader;
 class Display;
 class Renderer {
  public:
   Renderer(const Display& diplay);
   void prepare();
   void render(Entity& entity, StaticShader& shader) const;
+  void render(LineEntity& entity, BasicShader& shader) const;
 
  private:
   const Display& display_;

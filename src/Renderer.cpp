@@ -6,6 +6,8 @@
 #include <TexturedModel.h>
 #include <glad/glad.h>
 
+#include <BasicShader.h>
+
 namespace nrg {
 Renderer::Renderer(const Display& display) : display_{display} {
   projection_ = glm::perspective(glm::radians(fieldOfView_),
@@ -61,5 +63,19 @@ void Renderer::render(Entity& entity, StaticShader& shader) const {
   glDisableVertexAttribArray(0);
   glDisableVertexAttribArray(1);
   glDisableVertexAttribArray(2);
+}
+
+void Renderer::render(LineEntity& entity, BasicShader& shader) const {
+  auto& rawModel = entity.model();
+  glBindVertexArray(rawModel.vaoID());
+  glEnableVertexAttribArray(0);
+  auto transform =
+      nrg::createTransformation(entity.position(), entity.rotX(), entity.rotY(),
+                                entity.rotZ(), entity.scale());
+  shader.loadTransformation(transform);
+  shader.loadProjection(projection_);
+
+  glDrawArrays(GL_LINES, 0, rawModel.vertexCount());
+  glDisableVertexAttribArray(0);
 }
 }  // namespace nrg

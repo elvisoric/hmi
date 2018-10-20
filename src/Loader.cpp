@@ -19,6 +19,13 @@ RawModel Loader::loadVAO(std::vector<float> &vertices,
   return RawModel{vao, indices.size()};
 }
 
+RawModel Loader::loadVAO(std::vector<float> &vertices) {
+  auto vao = createVAO();
+  storeDataInAttributesList(0, 3, vertices);
+  unbindVAO();
+  return RawModel{vao, vertices.size() / 3};
+}  // namespace nrg
+
 void Loader::cleanUp() {
   for (auto &vao : vaos_) glDeleteVertexArrays(1, &vao);
   for (auto &vbo : vbos_) glDeleteBuffers(1, &vbo);

@@ -11,6 +11,8 @@ class Loader {
                    std::vector<float> &textureCoords,
                    std::vector<float> &normals,
                    std::vector<unsigned int> &indices);
+
+  RawModel loadVAO(std::vector<float> &vertices);
   virtual ~Loader();
   void cleanUp();
   unsigned int loadTexture(const std::string &path);

@@ -27,6 +27,9 @@
 #include <iostream>
 #include <vector>
 
+#include <BasicShader.h>
+#include <Grid.h>
+
 void renderImgui() {
   ImGui::Render();
   ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
@@ -80,6 +83,10 @@ int main() {
   cubeModel.texture().specularMap(cubeSpecular);
   nrg::Entity cube{cubeModel, glm::vec3(0.0f), 0.0f, 0.0f, 0.0f, 1.0f};
 
+  auto gridData = nrg::makeGrid(16, 16, 1.5f);
+  auto gridModel = loader.loadVAO(gridData);
+  nrg::LineEntity grid{gridModel, glm::vec3(0.0f), 0.0f, 0.0f, 0.0f, 1.0f};
+
   nrg::StaticShader shader;
   shader.start();
   shader.connectTextureUnits();
@@ -94,6 +101,8 @@ int main() {
   nrg::CameraHolder cameraHolder{fps, basic};
   cameraHolder.change();
   nrg::Light light{glm::vec3(0.0f, 3.0f, 4.0f), glm::vec3(1.0f)};
+
+  nrg::BasicShader basicShader;
 
   glEnable(GL_DEPTH_TEST);
   IMGUI_CHECKVERSION();
@@ -130,6 +139,11 @@ int main() {
     renderer.render(cube, shader);
 
     shader.stop();
+
+    basicShader.start();
+    basicShader.loadView(cameraHolder.camera());
+    renderer.render(grid, basicShader);
+    basicShader.stop();
 
     transformationsWindow(cube.position(), cube.rotation(), cube.scaling());
     renderImgui();

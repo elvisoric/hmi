@@ -41,5 +41,28 @@ class Entity {
   glm::vec3 rotation_;
   float scale_;
 };
+
+class LineEntity {
+ public:
+  LineEntity(const RawModel& model, const glm::vec3& position, float rotX,
+             float rotY, float rotZ, float scale)
+      : model_{model},
+        position_{position},
+        rotation_{rotX, rotY, rotZ},
+        scale_{scale} {}
+
+  inline RawModel& model() { return model_; }
+  inline glm::vec3& position() { return position_; }
+  inline float rotX() const { return rotation_.x; }
+  inline float rotY() const { return rotation_.y; }
+  inline float rotZ() const { return rotation_.z; }
+  inline float scale() const { return scale_; }
+
+ private:
+  RawModel model_;
+  glm::vec3 position_;
+  glm::vec3 rotation_;
+  float scale_;
+};
 }  // namespace nrg
 #endif  // NRG_ENTITY_H
