@@ -30,6 +30,20 @@
 #include <BasicShader.h>
 #include <Grid.h>
 
+class Models {
+ public:
+  void add(const std::string& key, const nrg::Entity& entity) {
+    ids_.push_back(key);
+    entities_.emplace(key, entity);
+  }
+  inline const std::vector<std::string>& ids() const { return ids_; }
+  inline nrg::Entity entity(const std::string& key) { return entities_[key]; }
+
+ private:
+  std::unordered_map<std::string, nrg::Entity> entities_;
+  std::vector<std::string> ids_;
+};
+
 void renderImgui() {
   ImGui::Render();
   ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
@@ -40,6 +54,36 @@ void imguiNewFrame() {
   ImGui_ImplGlfw_NewFrame();
   ImGui::NewFrame();
 }
+
+namespace ImGui {
+static auto vector_getter = [](void* vec, int idx, const char** out_text) {
+  auto& vector = *static_cast<std::vector<std::string>*>(vec);
+  if (idx < 0 || idx >= static_cast<int>(vector.size())) {
+    return false;
+  }
+  *out_text = vector.at(idx).c_str();
+  return true;
+};
+
+bool Combo(const char* label, int* currIndex,
+           std::vector<std::string>& values) {
+  if (values.empty()) {
+    return false;
+  }
+  return Combo(label, currIndex, vector_getter, static_cast<void*>(&values),
+               values.size());
+}
+
+bool ListBox(const char* label, int* currIndex,
+             std::vector<std::string>& values) {
+  if (values.empty()) {
+    return false;
+  }
+  return ListBox(label, currIndex, vector_getter, static_cast<void*>(&values),
+                 values.size());
+}
+
+}  // namespace ImGui
 
 void transformationsWindow(glm::vec3& position, glm::vec3& rotation,
                            float& scale) {
@@ -70,6 +114,48 @@ void environmentWindow(glm::vec3& color) {
   ImGui::End();
 }
 
+struct EntityManager {
+  std::unordered_map<std::string, nrg::Entity> entities;
+  std::vector<std::string> ids() const {
+    std::vector<std::string> result;
+    for (auto& e : entities) {
+      result.push_back(e.first);
+    }
+    return result;
+  }
+  static nrg::Entity specialCase;
+  nrg::Entity* current = &specialCase;
+};
+nrg::Entity EntityManager::specialCase = nrg::Entity{};
+
+void modelsWindow(Models& models, EntityManager& manager) {
+  ImGui::Begin("Models");
+  auto listbox_items = models.ids();
+  static int listbox_item_current = 0;
+  ImGui::ListBox("Models", &listbox_item_current, listbox_items);
+  static char str0[128] = "Hello, world!";
+  ImGui::InputText("Entity Name:", str0, IM_ARRAYSIZE(str0));
+  if (ImGui::Button("Add Model")) {
+    std::string name{str0};
+    manager.entities[name] =
+        models.entity(listbox_items.at(listbox_item_current));
+  }
+  ImGui::End();
+}
+
+void entitiesWindow(EntityManager& manager) {
+  ImGui::Begin("Entities");
+  auto listbox_items = manager.ids();
+  static int listbox_item_current = 0;
+  ImGui::ListBox("Enities", &listbox_item_current, listbox_items);
+  if (ImGui::Button("Use selected") && !listbox_items.empty()) {
+    std::string name = listbox_items.at(listbox_item_current);
+    std::cout << name << std::endl;
+    manager.current = &(manager.entities.at(name));
+  }
+  ImGui::End();
+}
+
 nrg::TexturedModel loadTexturedModel(const std::string& objpath,
                                      const std::string& texturpath,
                                      nrg::Loader& loader) {
@@ -84,6 +170,7 @@ nrg::TexturedModel loadTexturedModel(const std::string& objpath,
 int main() {
   nrg::Display display = nrg::createDisplay(1024.0f, 768.0f);
   nrg::Loader loader;
+  Models models;
 
   auto cubeModel =
       loadTexturedModel("res/cube.obj", "res/container.png", loader);
@@ -92,6 +179,31 @@ int main() {
   cubeModel.texture().shineDamper(64);
   cubeModel.texture().specularMap(cubeSpecular);
   nrg::Entity cube{cubeModel, glm::vec3(0.0f), 0.0f, 0.0f, 0.0f, 1.0f};
+
+  models.add("cube", cube);
+  auto sphereModel =
+      loadTexturedModel("res/sphere.obj", "res/sphere.png", loader);
+  sphereModel.texture().reflectivity(1);
+  sphereModel.texture().shineDamper(32);
+  nrg::Entity sphere{sphereModel, glm::vec3(0.0f), 0.0f, 0.0f, 0.0f, 1.0f};
+
+  models.add("sphere", sphere);
+  auto monkeyModel =
+      loadTexturedModel("res/monkey.obj", "res/monkey.png", loader);
+  monkeyModel.texture().reflectivity(1);
+  monkeyModel.texture().shineDamper(32);
+  nrg::Entity monkey{monkeyModel, glm::vec3(0.0f), 0.0f, 0.0f, 0.0f, 1.0f};
+
+  models.add("monkey", monkey);
+  auto barrelModel =
+      loadTexturedModel("res/barrel.obj", "res/barrel.png", loader);
+  auto barrelSpecularMap = loader.loadTexture("res/barrelS.png");
+  barrelModel.texture().reflectivity(0.5f);
+  barrelModel.texture().shineDamper(10);
+  barrelModel.texture().specularMap(barrelSpecularMap);
+  nrg::Entity barrel{barrelModel, glm::vec3(0.0), 0.0f, 0.0f, 0.0f, 1.0f};
+
+  models.add("barrel", barrel);
 
   auto gridData = nrg::makeGrid(16, 16, 1.5f);
   auto gridModel = loader.loadVAO(gridData);
@@ -131,6 +243,7 @@ int main() {
   ImGui_ImplOpenGL3_Init(glsl_version);
 
   ImGui::StyleColorsDark();
+  EntityManager manager;
 
   bool showDemoWindow = true;
   while (!display.shouldClose()) {
@@ -150,7 +263,8 @@ int main() {
     shader.loadView(cameraHolder.camera());
     shader.loadLight(light);
 
-    renderer.render(cube, shader);
+    for (auto& entity : manager.entities)
+      renderer.render(entity.second, shader);
 
     shader.stop();
 
@@ -160,8 +274,12 @@ int main() {
     renderer.render(grid, basicShader);
     basicShader.stop();
 
-    transformationsWindow(cube.position(), cube.rotation(), cube.scaling());
+    transformationsWindow(manager.current->position(),
+                          manager.current->rotation(),
+                          manager.current->scaling());
     environmentWindow(gridColor);
+    modelsWindow(models, manager);
+    entitiesWindow(manager);
     renderImgui();
     display.update();
   }

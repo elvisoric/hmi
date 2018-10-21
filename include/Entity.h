@@ -7,12 +7,16 @@
 namespace nrg {
 class Entity {
  public:
+  Entity() = default;
   Entity(const TexturedModel& model, const glm::vec3& position, float rotX,
          float rotY, float rotZ, float scale)
       : model_{model},
         position_{position},
         rotation_{rotX, rotY, rotZ},
         scale_{scale} {}
+
+  Entity(const Entity&) = default;
+  Entity& operator=(const Entity&) = default;
 
   inline TexturedModel& model() { return model_; }
   inline glm::vec3& position() { return position_; }

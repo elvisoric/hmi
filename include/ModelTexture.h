@@ -4,6 +4,7 @@
 namespace nrg {
 class ModelTexture {
  public:
+  ModelTexture() = default;
   ModelTexture(unsigned int id) : textureID_{id} {}
   inline unsigned int id() const { return textureID_; }
   inline float shineDamper() const { return shineDamper_; }

@@ -4,6 +4,7 @@
 namespace nrg {
 class RawModel {
  public:
+  RawModel() = default;
   RawModel(unsigned int vaoID, unsigned long vertexCount)
       : vaoID_{vaoID}, vertexCount_{vertexCount} {}
   inline unsigned int vaoID() const { return vaoID_; }

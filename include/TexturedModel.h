@@ -6,6 +6,7 @@
 namespace nrg {
 class TexturedModel {
  public:
+  TexturedModel() = default;
   TexturedModel(const RawModel& model, const ModelTexture& texture)
       : rawModel_{model}, texture_{texture} {}
   const RawModel& rawModel() const { return rawModel_; }
