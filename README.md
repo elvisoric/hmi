@@ -1,4 +1,3 @@
-Napredna Racunarska Grafika - Zavrsni rad
 >> Commands:
 0 - on/of lighting
 1 - ambient lighting toggle switch 
