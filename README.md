@@ -20,4 +20,5 @@ F - rotate camera over the scene (hold F)
 * add basic camera and functionality to switch between cameras
 * rotate camera over the scene in circle
 
+Demo:
 [![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/rpYvlJFKOzc/0.jpg)](https://www.youtube.com/watch?v=rpYvlJFKOzc)
