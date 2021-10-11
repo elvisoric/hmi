@@ -1,4 +1,6 @@
 project('nrg', 'cpp', default_options:['cpp_std=c++14'])
+install_subdir('res', install_dir:join_paths(meson.build_root()))
+install_subdir('shaders', install_dir:join_paths(meson.build_root()))
 
 incdir = include_directories(['include', 'include/imgui'])
 glfw_dep = dependency('glfw3')
